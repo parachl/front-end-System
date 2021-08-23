@@ -313,8 +313,8 @@ const ListUserRole = () => {
     setOpenModal(false);
   };
 
-  const suubmitDeleteAllRole = async () => {
-    const { status, data } = await AuthenService.callApi("POST").post("/userRole/deleteUserRole",userRoleObjC);
+  const suubmitDeleteAllRole = async (userNameDelete) => {
+    const { status, data } = await AuthenService.callApi("POST").post("/userRole/deleteUserRole",userNameDelete);
         if (status === 200) {
           if(data === 'fail'){
             alert('error please contact admin');
