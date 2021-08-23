@@ -1,0 +1,14 @@
+.div {
+    display: flex;
+    flex-direction: row;
+}
+
+.label {
+    margin-bottom: 6px;
+    padding-right:10px;
+}
+
+.input {
+     margin-bottom: 20px; 
+     
+}

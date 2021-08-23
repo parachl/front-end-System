@@ -1,0 +1,85 @@
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logoContainer {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 100px;
+}
+
+.center {
+    display: flex;
+    justify-content: center; 
+}
+.flexend {
+    display: flex;
+    justify-content: flex-end; 
+    margin-bottom: 5px;
+   
+}
+.head {
+    padding: 10px;
+    text-align: center;
+    background-color: #4879ff;
+    color: white;
+    position: static;
+    
+  }
+
+  .operation {
+  text-align: center;
+}
+  .buttonDelete {
+    border: none;
+    outline: none;
+    font-size: 11px;
+    font-family: "Quicksand", sans-serif;
+    color: #f5f0f0;
+    padding: 3px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+     /* border: 1px solid #f44336;  */
+     /* background-color: transparent;  */
+     background-color:#f44336;
+  }
+
+  .buttonEdit {
+    border: none;
+    outline: none;
+    font-size: 11px;
+    font-family: "Quicksand", sans-serif;
+    color: #f5f0f0;
+    padding: 3px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    /* border: 1px solid #4c8be9; */
+    background-color: #4c8be9
+  }
+
+  .buttonAdd{
+    background-color: #2eb85c;
+    color: #f5f0f0;
+    border: none;
+  }
+  .buttonClear{
+    background-color: #ced2d8;
+    color: #393a3b;
+    border: none;
+    /* width: 100px;
+    height: 40px;
+    border-radius: 8px; */
+  }
+
+  .buttonSave{
+    background-color: #2633e7;
+    color: #f5f0f0;
+    border: none;
+    /* width: 100px;
+    height: 40px;
+    border-radius: 8px; */
+  }
