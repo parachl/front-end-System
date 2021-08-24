@@ -89,23 +89,6 @@ function callApi(type) {
             },
         };
     }
-// if(type === 'post'){
-//     axios.post(baseURL+path, userObj, {
-//         headers: {
-//                         Accept: "application/json",
-//                         "Content-Type": "application/json; charset=utf-8",
-//                         Authorization: 'Bearer ' + userObj.token
-//                     },
-//       })
-//       .then((response) => {
-//         console.log('response data',response.data[0]);
-//         return response.data[0];
-//       })
-//       .catch((error) => {
-       
-//       })
-// }
-   
   
     return axios.create(defaultOptions);
 }

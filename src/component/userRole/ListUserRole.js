@@ -34,6 +34,7 @@ import { SelectCustom } from '../reuse/SelectCustom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import Checkbox from '@material-ui/core/Checkbox';
+import { SignalCellularNull } from '@material-ui/icons';
 
 const ListUserRole = () => {
   const useRowStyles = makeStyles({
@@ -107,6 +108,12 @@ const ListUserRole = () => {
     boxShadow: '0 2px 5px 2px #888888',
   };
 
+  const styleTextUserName= {
+    width: '350px',
+    marginLeft: '10px',
+    marginBottom: '20px',
+  };
+
   const styleButtonEdit = {
     float: 'right',
     marginRight: '23px',
@@ -121,7 +128,7 @@ const ListUserRole = () => {
     marginRight: '43px',
     marginBottom: '20px',
     color: 'white',
-    background: 'linear-gradient(45deg, #ff1744 30%, #29b6f6 90%)',
+    background:  '#ff1744',
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
   };
 
@@ -310,19 +317,35 @@ const ListUserRole = () => {
   };
 
   const handleClose = () => {
+    setListRoleByUser([]);
+    setUserNameDelete('');
     setOpenModal(false);
   };
 
-  const suubmitDeleteAllRole = async (userNameDelete) => {
-    const { status, data } = await AuthenService.callApi("POST").post("/userRole/deleteUserRole",userNameDelete);
+  const searchUserAllRole = async (userNameDelete) => {
+    let userRoleObjC = {userName:userNameDelete};
+    console.log('suubmitDeleteAllRole userRoleObjC>', userRoleObjC);
+    
+    const { status, data } = await AuthenService.callApi("POST").post("/userRole/searchRoleByUser",userRoleObjC);
         if (status === 200) {
-          if(data === 'fail'){
-            alert('error please contact admin');
-          }else{
-            fetcData();
+          console.log('suubmitDeleteAllRole data>', data);
+          if(data.listUserRoleObj != null){
+            setListRoleByUser(data.listUserRoleObj);
           }
         }
-    setOpenModal(false);
+    // setOpenModal(false);
+  };
+
+  const submitDeleteAllRole = async () => {
+    let userRoleObjC = {userName:userNameDelete};
+    console.log('suubmitDeleteAllRole userRoleObjC>', userRoleObjC);
+    
+    const { status, data } = await AuthenService.callApi("POST").post("/userRole/searchRoleByUser",userRoleObjC);
+        if (status === 200) {
+          console.log('suubmitDeleteAllRole data>', data);
+          setListRoleByUser(data.listUserRoleObj);
+        }
+    // setOpenModal(false);
   };
 
   return (
@@ -355,36 +378,41 @@ const ListUserRole = () => {
       <Button variant="outlined" color="primary" style={styleButtonDeleteUser} onClick={handleClickOpen}>
         Delete User All Role
       </Button>
-      <Dialog open={openModal} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <Dialog open={openModal} onClose={handleClose}  aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Delete User All Role</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+         <DialogContent style={{ width: 450}}> 
+         {listRoleByUser.length <= 0 &&<DialogContentText>
           Please fill out UserName to remove from all role permission.
-          </DialogContentText>
-          <TextField
+          </DialogContentText>}
+          <Row> <TextField
             autoFocus
             margin="dense"
             id="name"
             label="User Name"
             type="text"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogContent dividers>
-          {listRoleByUser.map((option) => (
-            <FormControlLabel value={userNameDelete} key={option} label={option} onChange={(e) => {
+            onChange={(e) => {
               setUserNameDelete(e.target.value);
-            }} />
-          ))}
+            }}
+            value={userNameDelete}
+            style={styleTextUserName}
+          /><Button onClick={() => searchUserAllRole(userNameDelete)} color="primary">
+          Search
+        </Button></Row>
+         
         </DialogContent>
-        <DialogActions>
+        {listRoleByUser.length > 0 && <DialogContent dividers>
+          {listRoleByUser.map((userRole) => (
+            <p>{userRole.roleObj.roleName}</p>
+          ))}
+        </DialogContent>}
+        {listRoleByUser.length > 0 && <DialogActions>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={suubmitDeleteAllRole} color="primary">
+          <Button onClick={() => submitDeleteAllRole()} color="primary">
             Submit
           </Button>
-        </DialogActions>
+        </DialogActions>}
       </Dialog>
     </div>
         <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addUserRole()}>

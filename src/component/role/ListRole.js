@@ -97,7 +97,7 @@ const ListRole = () => {
     marginRight: '43px',
     marginBottom: '20px',
     color: 'white',
-    background: 'linear-gradient(45deg, #ff1744 30%, #29b6f6 90%)',
+    background:  '#ff1744',
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
   };
 
