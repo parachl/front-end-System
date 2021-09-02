@@ -7,6 +7,7 @@ import { get } from 'lodash';
 import {useDispatch} from 'react-redux';
 import { showSpinner  } from '../../../action/Constants.action';
 import { hideSpinner } from '../../../action/Constants.action';
+import logo from '../../../image/thai-logo-1.png';
 
 const SideBar = ({ isOpen, toggle }) => {
   // const [menus, setMenus] = useState([]);
@@ -18,6 +19,12 @@ const SideBar = ({ isOpen, toggle }) => {
       // setMenus(menu);
       dispathch(hideSpinner())
     },[]);
+
+    const img = {
+      width: '250px',
+      hight: '120px'
+    };
+   
   
   // if(menus !== null){
     return (
@@ -26,11 +33,10 @@ const SideBar = ({ isOpen, toggle }) => {
           <span color="info" onClick={toggle} style={{ color: "#fff" }}>
             &times;
           </span>
-          <h3>Bootstrap Sidebar</h3>
+          <img  alt={logo} src={logo} style={img}  />
         </div>
         <div className="side-menu">
           <Nav vertical className="list-unstyled pb-3">
-            <p>Dummy Heading</p>
             {get(menus,'listGroupMenu',[]) != null && get(menus,'listGroupMenu',[]).map((item, index) => {
               return (<SubMenu item={item} key={index} />
               )

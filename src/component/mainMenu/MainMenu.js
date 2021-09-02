@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import SideBar from "./MenuBar/SideBar";
 import { BrowserRouter, Switch, Route,Redirect } from 'react-router-dom';
-import PageOne from "../pageOne/PageOne";
+import ListIncomeCatalog from "../IncomeCatalog/ListIncomeCatalog";
 import PageTwo from "../pageTwo/PageTwo";
 import ExamRound from "../Exam/ExamRound";
 import AddRole from "../role/AddRole";
@@ -50,7 +50,8 @@ const MainMenu = () => {
   },[]);   
 
   return (
-    <BrowserRouter>
+     <BrowserRouter basename={'/tax'}>
+    {/* <BrowserRouter> */}
     <div className="Main wrapper">
         <SideBar toggle={toggleSidebar} isOpen={sidebarIsOpen}/>
       <Container
@@ -59,7 +60,6 @@ const MainMenu = () => {
       >
         <Topbar toggleSidebar={toggleSidebar} />
         <Switch>
-        <Route path="/home/homeOne" exact component={PageOne}></Route>
         <Route path="/home/homeTwo" exact component={PageTwo}></Route>
         <Route path="/about" exact component={About}></Route>
         <Route path="/examRound" exact component={ExamRound}></Route>
@@ -69,6 +69,7 @@ const MainMenu = () => {
         <Route path="/listUserRole" exact component={ListUserRole}></Route>
         <Route path="/addUserRole" exact component={AddUserRole}></Route>
         <Route path="/editUserRole" exact component={EditUserRole}></Route>
+        <Route path="/listIncomeCatalog" exact component={ListIncomeCatalog}></Route>
       </Switch>
      </Container>
       </div>

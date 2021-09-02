@@ -23,9 +23,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { green } from '@material-ui/core/colors';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
-import './Role.css';
 
-const ListRole = () => {
+const ListIncomeCatalog = () => {
   const useRowStyles = makeStyles({
     root: {
       '& > *': {
@@ -40,7 +39,7 @@ const ListRole = () => {
   console.log('1');
 
   const [listGroupRoleMenu, setListGroupRoleMenu] = useState([]);
-  const [roleName, setRoleName] = useState('');
+  const [name, setName] = useState('');
   const [status, setStatus] = useState('');
   const [checkedGroupMenu, setCheckedGroupMenu] = useState({});
   const [checkedList, setCheckedList] = useState({});
@@ -51,9 +50,9 @@ const ListRole = () => {
   const [roleRightE, setRoleRightE] = useState(false);
   const [roleRightD, setRoleRightD] = useState(false);
   const [roleRightV, setRoleRightV] = useState(false);
-  let rowsRole = [{}];
+  let rowsTaxIncome = [{}];
   let listCheckBox = [{}];
-  const [listRole, setListRole] = useState([]);
+  const [listTaxIncome, setListTaxIncome] = useState([]);
   // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
   let listRoleMenuAdd = [];
   let listStatus = [{status:'Active',value:'ST001'},{status:'In Active',value:'ST002'},{status:'All',value:''}];
@@ -92,6 +91,14 @@ const ListRole = () => {
     marginBottom: '20px',
     background: '#007ac2',
   };
+
+  const styleButtonExample = {
+    float: 'right',
+    marginRight: '23px',
+    marginBottom: '20px',
+    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+    boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+  };
  
 
   const styleButtonDelete = {
@@ -99,7 +106,7 @@ const ListRole = () => {
     marginRight: '43px',
     marginBottom: '20px',
     color: 'white',
-    background:  '#e42313',
+    background:  '#ff1744',
     
   };
   
@@ -120,26 +127,26 @@ const ListRole = () => {
   }
 
   const fetcData = async () => {
-    setRoleName('');
+    setName('');
     setStatus('');
-    const { status, data } = await AuthenService.callApi("GET").get("/role/listRole");
+    const { status, data } = await AuthenService.callApi("GET").get("/taxIncomeCode/listTaxIncomeCode");
 
     if (status === 200) {
       console.log('fetcData data 1 > ', data);
-      if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
-        for (let i = 0; i < data.listRoleObj.length; i++) {
-          let current_datetime = new Date(data.listRoleObj[i].createDate);
+      if (data.listTaxIncomeObj !== null && data.listTaxIncomeObj.length > 0) {
+        for (let i = 0; i < data.listTaxIncomeObj.length; i++) {
+          let current_datetime = new Date(data.listTaxIncomeObj[i].createTime);
           let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
           let formatted_date_u = '';
-          if(data.listRoleObj[i].updateDate != null){
-            let current_datetime_u = new Date(data.listRoleObj[i].updateDate);
+          if(data.listTaxIncomeObj[i].updateDate != null){
+            let current_datetime_u = new Date(data.listTaxIncomeObj[i].updateTime);
              formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
           }
-          rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id, createBy: data.listRoleObj[i].createBy, createDate: formatted_date, updateDate: formatted_date_u, updateBy: data.listRoleObj[i].updateBy, status: data.listRoleObj[i].status }
-          listCheckBox[i] = {isChecked:false,id: data.listRoleObj[i].id};
+          rowsTaxIncome[i] = { Name: data.listTaxIncomeObj[i].Name, id: data.listTaxIncomeObj[i].id, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
+          listCheckBox[i] = {isChecked:false,id: data.listTaxIncomeObj[i].id};
           // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
         }
-        setListRole(rowsRole);
+        setListTaxIncome(rowsTaxIncome);
         setCheckedList(listCheckBox);
       }
     } else {
@@ -154,12 +161,12 @@ const ListRole = () => {
 
 useEffect(() => {
   console.log('2');
-  const result = AuthenService.checkPermission('Role', 'L');
+  const result = AuthenService.checkPermission('Income Catalog', 'L');
   
   if (!result) {
     history.push("/main");
   }
-  const roleRight = AuthenService.checkRoleRight('Role');
+  const roleRight = AuthenService.checkRoleRight('Income Catalog');
   if(roleRight.indexOf('A') !== -1){
     setRoleRightA(true);
   }
@@ -181,15 +188,15 @@ const editUser = (id) => {
 
 const deleteUserRole = async () => {
   if(checkedList.length > 0){
-    let listRoleObj = [];
+    let listTaxIncomeObj = [];
     for(var f = 0 ; f < checkedList.length ; f++){
       if(checkedList[f].isChecked){
-        listRoleObj.push({id:checkedList[f].id})
+        listTaxIncomeObj.push({id:checkedList[f].id})
       }
     }
-    let roleObjC = {listRoleObj};
+    let taxIncomeCodeObjC = {listTaxIncomeObj};
 
-    const { status, data } = await AuthenService.callApi("POST").post("/role/deleteRole",roleObjC);
+    const { status, data } = await AuthenService.callApi("POST").post("/taxIncomeCode/deleteTaxIncomeCode",taxIncomeCodeObjC);
     if (status === 200) {
       if(data === 'fail'){
         alert('Cannot delete this item because it is used.');
@@ -224,31 +231,31 @@ const changeCheckBoxList = (event, index) => {
 
 }
 
-const searchRole = async (roleName, statusRole) => {
-  const roleObj ={roleName,status:statusRole }
-  console.log('searchRole roleObj',roleObj);
-  const { status, data } = await AuthenService.callApi("POST").post("/role/searchRole",roleObj);
-  console.log('searchRole statusHttp',status);
+const searchRole = async (name, statusTaxIncomeCode) => {
+  const taxIncomeCodeObj ={name,status:statusTaxIncomeCode }
+  console.log('searchTaxIncome taxIncomeCodeObj',taxIncomeCodeObj);
+  const { status, data } = await AuthenService.callApi("POST").post("/taxIncomeCode/searchTaxIncomeCode",taxIncomeCodeObj);
+  console.log('searchTaxIncome statusHttp',status);
   if(status === 200){
-    if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
-      console.log('searchRole in',data);
-      for (let i = 0; i < data.listRoleObj.length; i++) {
-        let current_datetime = new Date(data.listRoleObj[i].createDate);
+    if (data.listTaxIncomeObj !== null && data.listTaxIncomeObj.length > 0) {
+      console.log('searchTaxIncome in',data);
+      for (let i = 0; i < data.listTaxIncomeObj.length; i++) {
+        let current_datetime = new Date(data.listTaxIncomeObj[i].createTime);
         let formatted_date_u = '';
-        if(data.listRoleObj[i].updateDate != null){
-          let current_datetime_u = new Date(data.listRoleObj[i].updateDate);
+        if(data.listTaxIncomeObj[i].updateTime != null){
+          let current_datetime_u = new Date(data.listTaxIncomeObj[i].updateTime);
            formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
         }
         let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
 
-        rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id, createBy: data.listRoleObj[i].createBy, createDate: formatted_date, updateDate: formatted_date_u, updateBy: data.listRoleObj[i].updateBy, status: data.listRoleObj[i].status }
-        listCheckBox[i] = {isChecked:false,id: data.listRoleObj[i].id};
+        rowsTaxIncome[i] = { Name: data.listTaxIncomeObj[i].Name, id: data.listTaxIncomeObj[i].id, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
+        listCheckBox[i] = {isChecked:false,id: data.listTaxIncomeObj[i].id};
       }
-      setListRole(rowsRole);
+      setListTaxIncome(rowsTaxIncome);
       setCheckedList(listCheckBox);
-    }else if(data.listRoleObj !== null && data.listRoleObj.length === 0){
-      console.log('searchRole null',data);
-      setListRole([]);
+    }else if(data.listTaxIncomeObj !== null && data.listTaxIncomeObj.length === 0){
+      console.log('searchTaxIncome null',data);
+      setListTaxIncome([]);
     }
   }
 }
@@ -276,20 +283,20 @@ const handleChangeRowsPerPage = (event) => {
 
 return (
   <PageBox>
-    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>List Role </tableRow></div>
+    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>ประเภทรายได้ </tableRow></div>
     <div><SearchBox>
         <Row>
-          <Col md="auto"><InputLabelReuse label="Role Name :" type="text" value={roleName}
+          <Col md="auto"><InputLabelReuse label="ชื่อ :" type="text" value={name}
             onChange={(e) => {
-              setRoleName(e.target.value);
+              setName(e.target.value);
             }} style={{ width: 280 }} /></Col>
-          <Col style={colStatus}><SelectCustom label="Status :" value={status} listData={listStatus}
+          <Col style={colStatus}><SelectCustom label="สถานะ :" value={status} listData={listStatus}
             onChange={(e) => {
               handleChangeStatus(e.target.value);
             }} style={{ width: 180 }} /></Col>
             <Col><Button variant="contained" color="primary" style={styleButtonClear} onClick={() => fetcData()}>
       Clear
-    </Button><Button variant="contained" color="primary" style={styleButtonsearch} onClick={() => searchRole(roleName,status)}>
+    </Button><Button variant="contained" color="primary" style={styleButtonsearch} onClick={() => searchRole(name,status)}>
       Search
     </Button></Col>
     <Col></Col>
@@ -309,22 +316,19 @@ return (
           <TableCell style={{ width: 320, fontSize: 18 }}>
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>Role Name</p>
+              <p>รหัส</p>
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>Create Date</p>
+              <p>ชื่อ</p>
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>Create By</p>
+              <p>รายละเอียด (TH)</p>
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>Update Date</p>
+              <p>ตารางภาษี</p>
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>Update By</p>
-            </TableCell>
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>Status</p>
+              <p>สถานะ</p>
             </TableCell>
             <TableCell>
             </TableCell>
@@ -333,27 +337,26 @@ return (
           </TableRow>
         </TableHead>
         <TableBody>
-          {listRole.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((role,index) => {
+          {listTaxIncome.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((taxIncome,index) => {
             return (
-              <TableRow tabIndex={-1} key={role.id}>
+              <TableRow tabIndex={-1} key={taxIncome.id}>
                 <TableCell><Checkbox
                   defaultChecked
                   color="primary" checked={getCheckedList(index)}
                   onChange={(e) => changeCheckBoxList(e, index)}
-                  inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={role.status === 'ST002'}
+                  inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxIncome.status === 'ST002'}
                 /></TableCell>
-                <TableCell>{role.roleName}</TableCell>
-                <TableCell>{role.createDate}</TableCell>
-                <TableCell>{role.createBy}</TableCell>
-                <TableCell>{role.updateDate}</TableCell>
-                <TableCell>{role.updateBy}</TableCell>
-                <TableCell>{role.status === 'ST001' ? 'Active' : role.status === 'ST002' ? 'InActive' : ''}</TableCell>
+                <TableCell>{taxIncome.name}</TableCell>
+                <TableCell>{taxIncome.descriptionTh}</TableCell>
+                <TableCell>{taxIncome.taxCatalog}</TableCell>
+                <TableCell>{taxIncome.taxRate}</TableCell>
+                <TableCell>{taxIncome.status === 'ST001' ? 'Active' : taxIncome.status === 'ST002' ? 'InActive' : ''}</TableCell>
                 <TableCell>
-                  {role.status === 'ST001' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(role.id)} disabled={!roleRightE}>
+                  {taxIncome.status === 'ST001' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(taxIncome.id)} disabled={!roleRightE}>
                     Edit
                   </Button>}</TableCell>
                   <TableCell>
-                  {role.status === 'ST001' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(role.id)} disabled={!roleRightV}>
+                  {taxIncome.status === 'ST001' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(taxIncome.id)} disabled={!roleRightV}>
                     View
                   </Button>}</TableCell>
                 {/* {columns.map((column) => {
@@ -373,7 +376,7 @@ return (
     <TablePagination
       rowsPerPageOptions={[10, 25, 100]}
       component="div"
-      count={listRole.length}
+      count={listTaxIncome.length}
       rowsPerPage={rowsPerPage}
       page={page}
       onPageChange={handleChangePage}
@@ -383,4 +386,4 @@ return (
 );
 }
 
-export default ListRole;
+export default ListIncomeCatalog;

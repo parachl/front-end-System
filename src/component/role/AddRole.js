@@ -132,15 +132,16 @@ const AddRole = () => {
     const roleObj = { roleName: roleName, listRoleMenuObj: ArrayRoleMenu };
     if (roleObj.roleName === '' || roleObj.listRoleMenuObj.length === 0) {
       alert('Please fill in all required fields.');
-    }
-    console.log('roleObj', roleObj);
-    const { status, data } = await AuthenService.callApi("POST").post("/role/addRole",roleObj);
-    console.log('data', data);
-    if (data === 'success') {
-      history.push("/listRole");
-    } else if (data === 'duplicate') {
+    }else{
+      console.log('roleObj', roleObj);
+      const { status, data } = await AuthenService.callApi("POST").post("/role/addRole",roleObj);
       console.log('data', data);
-      alert('Data Duplicate');
+      if (data === 'success') {
+        history.push("/listRole");
+      } else if (data === 'duplicate') {
+        console.log('data', data);
+        alert('Data Duplicate');
+      }
     }
   }
 
@@ -237,17 +238,6 @@ const AddRole = () => {
 
     }
   }
-  // console.log('listOpen out', listOpen);
-  // const handleChange = (event, param) => {
-  //   var index = listRoleMenu.findIndex((x) => x.menuId === param.id);
-  //   if (index === -1) {
-  //     setListRoleMenu([...listRoleMenu, { menuId: param.id, roleId: '', roleRight: event.target.value }]);
-  //   } else {
-  //     let g = listRoleMenu[index];
-  //     g["roleRight"] = event.target.value;
-  //     setListRoleMenu([...listRoleMenu.slice(0, index), g, ...listRoleMenu.slice(index + 1)]);
-  //   }
-  // };
 
   const handleChangeCheckedRoleRight = (value, param) => {
 

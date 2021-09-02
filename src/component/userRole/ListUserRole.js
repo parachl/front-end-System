@@ -75,6 +75,10 @@ const ListUserRole = () => {
   const [userNameDelete, setUserNameDelete] = useState('');
   const [status, setStatus] = useState('');
   const [checkedList, setCheckedList] = useState({});
+  const [roleRightA, setRoleRightA] = useState(false);
+  const [roleRightE, setRoleRightE] = useState(false);
+  const [roleRightD, setRoleRightD] = useState(false);
+  const [roleRightV, setRoleRightV] = useState(false);
   let listRoleMenuAdd = [];
   let listCheckBox = [{}];
   let listStatus = [{ status: 'Active', value: 'ST001' }, { status: 'In Active', value: 'ST002' }, { status: 'All', value: '' }];
@@ -89,23 +93,21 @@ const ListUserRole = () => {
     float: 'right',
     marginRight: '23px',
     marginBottom: '20px',
-    background: 'linear-gradient(45deg, #00e676 30%, #80deea 70%)',
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    color: 'white',
+    background: '#007ac2',
   };
 
   const styleButtonSearch = {
     float: 'right',
     marginRight: '23px',
-    background: '#7c4dff',
+    background: '#007ac2',
     marginBottom: '20px',
-    boxShadow: '0 2px 5px 2px #888888',
   };
   const styleButtonClear = {
     float: 'right',
     marginRight: '23px',
-    background: '##9fa8da',
+    background: '#007ac2',
     marginBottom: '20px',
-    boxShadow: '0 2px 5px 2px #888888',
   };
 
   const styleTextUserName= {
@@ -118,8 +120,7 @@ const ListUserRole = () => {
     float: 'right',
     marginRight: '23px',
     marginBottom: '20px',
-    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-    boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+    background: '#007ac2',
   };
  
 
@@ -128,8 +129,7 @@ const ListUserRole = () => {
     marginRight: '43px',
     marginBottom: '20px',
     color: 'white',
-    background:  '#ff1744',
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    background:  '#e42313',
   };
 
   const styleButtonDeleteUser = {
@@ -137,8 +137,7 @@ const ListUserRole = () => {
     marginRight: '23px',
     marginBottom: '20px',
     color: 'white',
-    background:  '#ff1744',
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    background:  '#e42313',
   };
 
   const styleButton = {
@@ -161,6 +160,9 @@ const ListUserRole = () => {
   };
 
   const fetcData = async () => {
+    setUserName('');
+    setRoleName('');
+    setStatus('');
     const { status, data } = await AuthenService.callApi("GET").get("/userRole/listUserRole");
 
     if (status === 200) {
@@ -192,6 +194,19 @@ const ListUserRole = () => {
     if (!result) {
       history.push("/main");
     }
+    const roleRight = AuthenService.checkRoleRight('UserRole');
+  if(roleRight.indexOf('A') !== -1){
+    setRoleRightA(true);
+  }
+  if(roleRight.indexOf('E') !== -1){
+    setRoleRightE(true);
+  }
+  if(roleRight.indexOf('D') !== -1){
+    setRoleRightD(true);
+  }
+  if(roleRight.indexOf('V') !== -1){
+    setRoleRightV(true);
+  }
 
   }
 
@@ -236,6 +251,7 @@ const ListUserRole = () => {
   }
 
   const editUser = (groupId) => {
+    console.log('editUser groupId' , groupId);
     // const { status, data } = await api.post("/findById", userRoleObj);
     // console.log('data' , data);
     // if(data === 'Success'){
@@ -245,7 +261,7 @@ const ListUserRole = () => {
 
   function getCheckedList(index) {
     console.log('checkedList index>', index);
-    if (checkedList.length > 0) {
+    if (checkedList.length > 0 && checkedList.length > index) {
       console.log('checkedList >', checkedList);
       return checkedList[index].isChecked;
     }else{
@@ -337,15 +353,15 @@ const ListUserRole = () => {
   };
 
   const submitDeleteAllRole = async () => {
-    let userRoleObjC = {userName:userNameDelete};
+    let userRoleObjC = {userName:userNameDelete,listUserRoleObj:listRoleByUser};
     console.log('suubmitDeleteAllRole userRoleObjC>', userRoleObjC);
     
-    const { status, data } = await AuthenService.callApi("POST").post("/userRole/searchRoleByUser",userRoleObjC);
+    const { status, data } = await AuthenService.callApi("POST").post("/userRole/deleteUserAllRole",userRoleObjC);
         if (status === 200) {
           console.log('suubmitDeleteAllRole data>', data);
-          setListRoleByUser(data.listUserRoleObj);
+          setListRoleByUser([]);
         }
-    // setOpenModal(false);
+    setOpenModal(false);
   };
 
   return (
@@ -371,11 +387,11 @@ const ListUserRole = () => {
               Search
             </Button></Col>
         </Row></SearchBox></div>
-        <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => delteUserRole()}>
+        <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => delteUserRole()} disabled={!roleRightD}>
       Delete
     </Button>
     <div>
-      <Button variant="outlined" color="primary" style={styleButtonDeleteUser} onClick={handleClickOpen}>
+      <Button variant="outlined" color="primary" style={styleButtonDeleteUser} onClick={handleClickOpen} disabled={!roleRightD}>
         Delete User All Role
       </Button>
       <Dialog open={openModal} onClose={handleClose}  aria-labelledby="form-dialog-title">
@@ -415,7 +431,7 @@ const ListUserRole = () => {
         </DialogActions>}
       </Dialog>
     </div>
-        <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addUserRole()}>
+        <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addUserRole()} disabled={!roleRightA}>
         Add
       </Button>
       <TableContainer className={classes.container} style={{ height: 600 }}>
@@ -448,6 +464,8 @@ const ListUserRole = () => {
               </TableCell>
               <TableCell>
               </TableCell>
+               {!roleRightE && roleRightV &&<TableCell>
+            </TableCell>}
             </TableRow>
           </TableHead>
           <TableBody style={{ height: 600 }}>
@@ -468,8 +486,12 @@ const ListUserRole = () => {
                   <TableCell>{userRole.updateBy}</TableCell>
                   <TableCell>{userRole.status === 'ST001' ? 'Active' : userRole.status === 'ST002' ? 'InActive' : ''}</TableCell>
                   <TableCell>
-                  {userRole.status === 'ST001' && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(userRole.groupId)}>
+                  {userRole.status === 'ST001' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(userRole.groupId)} disabled={!roleRightE}>
                       Edit
+                    </Button>}</TableCell>
+                    <TableCell>
+                  {userRole.status === 'ST001' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(userRole.groupId)} disabled={!roleRightV}>
+                      View
                     </Button>}</TableCell>
                   {/* {columns.map((column) => {
                       const value = row[column.id];

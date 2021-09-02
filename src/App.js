@@ -29,7 +29,8 @@ function App() {
 
   return (
     
-    <BrowserRouter>
+     <BrowserRouter basename="/tax">
+      {/* <BrowserRouter > */}
     <FullPageLoader/>
     {/* <div className="Main wrapper"> */}
     {/* <SideBar toggle={toggleSidebar} isOpen={sidebarIsOpen} /> */}
@@ -44,7 +45,7 @@ function App() {
         </Switch>
         {/* </div> */}
       </BrowserRouter>
-    
+    // "homepage": "https://dev-asa.thailife.com/tax",
     
   );
 }

@@ -16,6 +16,11 @@ const Topbar = ({ toggleSidebar }) => {
   }
 
   const styleButton = {
+    background: '#007ac2',
+  };
+
+  const styleButtonLogOut = {
+    background: '#007ac2',
     marginLeft: '1450px',
   };
 
@@ -25,11 +30,11 @@ const Topbar = ({ toggleSidebar }) => {
       light
       className="navbar shadow-sm p-3 mb-4 bg-white rounded"
       expand="md">
-      <Button color="info" onClick={toggleSidebar}>
+      <Button  style={styleButton} onClick={toggleSidebar}>
         <FontAwesomeIcon icon={faAlignLeft} />
       </Button>
       {/* <NavbarToggler onClick={toggleTopbar} /> */}
-      <Button color="info"  style={styleButton} onClick={() => logOut()}>
+      <Button  style={styleButtonLogOut} onClick={() => logOut()}>
       LogOut
       </Button>
     </Navbar>

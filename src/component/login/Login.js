@@ -16,6 +16,10 @@ const Login = () => {
     localStorage.clear();
     const history = useHistory();
 
+    const styleButtonLogin = {
+        background: '#007ac2',
+      };
+
     const verifyLogin = async (username, password) => {
         const userName = username;
         const userObj = { userName,password };
@@ -96,8 +100,9 @@ const Login = () => {
                         }} />
                     </div>
                     <div className="text-center">
-                        <Button type="button" onClick={() => verifyLogin(username, password)}>Submit</Button>
+                        <Button type="button" style={styleButtonLogin} onClick={() => verifyLogin(username, password)}>Submit</Button>
                     </div>
+                    <p>Version : 1.0.1</p>
                 </form>
             </Wrapper>
         </Container>

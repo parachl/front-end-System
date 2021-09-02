@@ -3,12 +3,14 @@ import { BehaviorSubject } from 'rxjs';
 import axios from "axios";
 import api from "../../src/api/GetApi";
 
-const baseURL = "http://localhost:8080/demo/";
+const baseURL = "http://localhost:8080/tax/";
+//const baseURL = "https://dev-smws.thailife.com:8443/wsTaxSpring/";
 export const AuthenService = {
     checkPermission,
     login,
     logout,
-    callApi
+    callApi,
+    checkRoleRight
 };
 
 
@@ -36,6 +38,24 @@ function checkPermission(menu, action) {
                 if (listMenu.listGroupMenu[i].roleRight.indexOf(action) !== -1) {
                     result = true;
                     found = true;
+                }
+            }
+        }
+    }
+    // result = listMenu.includes(menu);
+    return result;
+
+}
+
+function checkRoleRight(menu) {
+    let result = false;
+    const listMenu = JSON.parse(localStorage.getItem('listMenu'));
+    let found = false;
+    for (let i = 0; i < listMenu.listGroupMenu.length; i++) {
+        if (undefined !== listMenu.listGroupMenu[i].listMenu && null !== listMenu.listGroupMenu[i].listMenu && !found) {
+            for (let e = 0; e < listMenu.listGroupMenu[i].listMenu.length; e++) {
+                if (menu === listMenu.listGroupMenu[i].listMenu[e].menuName && !found) {
+                        result = listMenu.listGroupMenu[i].listMenu[e].roleRight;
                 }
             }
         }
@@ -77,7 +97,7 @@ function callApi(type) {
                 Accept: "application/json",
                 "Content-Type": "application/json; charset=utf-8",
                 Authorization: 'Bearer ' + user.token
-            },
+            }
         };
     }else{
         defaultOptions = {
@@ -86,7 +106,7 @@ function callApi(type) {
             headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json; charset=utf-8",
-            },
+            }
         };
     }
   
