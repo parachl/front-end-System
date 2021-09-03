@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
 import { FormGroup, Label, Row, Col } from 'reactstrap';
@@ -493,4 +493,4 @@ const AddRole = () => {
   );
 }
 
-export default AddRole;
+export default withRouter(AddRole);

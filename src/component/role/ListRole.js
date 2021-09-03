@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
 import { Row, Col } from 'reactstrap';
 import api from "../../api/GetApi";
@@ -330,6 +330,8 @@ return (
             </TableCell>
             {!roleRightE && roleRightV &&<TableCell>
             </TableCell>}
+            <TableCell>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -383,4 +385,4 @@ return (
 );
 }
 
-export default ListRole;
+export default withRouter(ListRole);

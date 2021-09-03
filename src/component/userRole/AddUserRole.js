@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import api from "../../api/GetApi";
 
@@ -465,4 +465,4 @@ const clearSearch = () => {
   );
 }
 
-export default AddUserRole;
+export default withRouter(AddUserRole);

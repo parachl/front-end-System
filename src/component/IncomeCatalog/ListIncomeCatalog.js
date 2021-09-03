@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
 import { Row, Col } from 'reactstrap';
 import api from "../../api/GetApi";
@@ -142,7 +142,7 @@ const ListIncomeCatalog = () => {
             let current_datetime_u = new Date(data.listTaxIncomeObj[i].updateTime);
              formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
           }
-          rowsTaxIncome[i] = { Name: data.listTaxIncomeObj[i].Name, id: data.listTaxIncomeObj[i].id, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
+          rowsTaxIncome[i] = { code: data.listTaxIncomeObj[i].code,name: data.listTaxIncomeObj[i].name,description: data.listTaxIncomeObj[i].description,descriptionTh: data.listTaxIncomeObj[i].descriptionTh,taxCatalog: data.listTaxIncomeObj[i].taxCatalog,taxRate: data.listTaxIncomeObj[i].taxRate, id: data.listTaxIncomeObj[i].id, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
           listCheckBox[i] = {isChecked:false,id: data.listTaxIncomeObj[i].id};
           // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
         }
@@ -182,11 +182,12 @@ useEffect(() => {
   fetcData();
 }, []);
 
-const editUser = (id) => {
-  history.push("/editRole", { id: id });
+const editTaxIncome = (id) => {
+  console.log('id >',id);
+  history.push("/editIncomeCatalog", { id: id });
 }
 
-const deleteUserRole = async () => {
+const deleteTaxIncomeCode = async () => {
   if(checkedList.length > 0){
     let listTaxIncomeObj = [];
     for(var f = 0 ; f < checkedList.length ; f++){
@@ -248,7 +249,7 @@ const searchRole = async (name, statusTaxIncomeCode) => {
         }
         let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
 
-        rowsTaxIncome[i] = { Name: data.listTaxIncomeObj[i].Name, id: data.listTaxIncomeObj[i].id, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
+        rowsTaxIncome[i] = { code: data.listTaxIncomeObj[i].code,name: data.listTaxIncomeObj[i].name,description: data.listTaxIncomeObj[i].description,descriptionTh: data.listTaxIncomeObj[i].descriptionTh,taxCatalog: data.listTaxIncomeObj[i].taxCatalog,taxRate: data.listTaxIncomeObj[i].taxRate, id: data.listTaxIncomeObj[i].id, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
         listCheckBox[i] = {isChecked:false,id: data.listTaxIncomeObj[i].id};
       }
       setListTaxIncome(rowsTaxIncome);
@@ -266,8 +267,8 @@ const theme = createTheme({
   },
 });
 
-const addRole = () => {
-  history.push("/addRole");
+const addIncomeCatalog = () => {
+  history.push("/addIncomeCatalog");
 }
 
 const [page, setPage] = React.useState(0);
@@ -301,11 +302,11 @@ return (
     </Button></Col>
     <Col></Col>
         </Row></SearchBox></div>
-    <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteUserRole()} disabled={!roleRightD}>
+    <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteTaxIncomeCode()} disabled={!roleRightD}>
       Delete
     </Button>
     <ThemeProvider theme={theme}>
-    <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addRole()} disabled={!roleRightA}>
+    <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addIncomeCatalog()} disabled={!roleRightA}>
       Add
     </Button>
     </ThemeProvider>
@@ -323,6 +324,9 @@ return (
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
               <p>รายละเอียด (TH)</p>
+            </TableCell> 
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>ประเภทภาษี</p>
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
               <p>ตารางภาษี</p>
@@ -332,8 +336,10 @@ return (
             </TableCell>
             <TableCell>
             </TableCell>
-            {!roleRightE && roleRightV &&<TableCell>
+            {!roleRightE && roleRightV &&<TableCell style={{ width: 320, fontSize: 18 }}>
             </TableCell>}
+            <TableCell>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -346,17 +352,18 @@ return (
                   onChange={(e) => changeCheckBoxList(e, index)}
                   inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxIncome.status === 'ST002'}
                 /></TableCell>
+                <TableCell>{taxIncome.code}</TableCell>
                 <TableCell>{taxIncome.name}</TableCell>
                 <TableCell>{taxIncome.descriptionTh}</TableCell>
                 <TableCell>{taxIncome.taxCatalog}</TableCell>
                 <TableCell>{taxIncome.taxRate}</TableCell>
                 <TableCell>{taxIncome.status === 'ST001' ? 'Active' : taxIncome.status === 'ST002' ? 'InActive' : ''}</TableCell>
                 <TableCell>
-                  {taxIncome.status === 'ST001' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(taxIncome.id)} disabled={!roleRightE}>
+                  {taxIncome.status === 'ST001' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxIncome(taxIncome.id)} disabled={!roleRightE}>
                     Edit
                   </Button>}</TableCell>
                   <TableCell>
-                  {taxIncome.status === 'ST001' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(taxIncome.id)} disabled={!roleRightV}>
+                  {taxIncome.status === 'ST001' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxIncome(taxIncome.id)} disabled={!roleRightV}>
                     View
                   </Button>}</TableCell>
                 {/* {columns.map((column) => {
@@ -386,4 +393,4 @@ return (
 );
 }
 
-export default ListIncomeCatalog;
+export default withRouter(ListIncomeCatalog);

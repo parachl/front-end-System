@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
 import styled from "styled-components";
 import { FormGroup, Label, Row, Col } from 'reactstrap';
@@ -466,6 +466,8 @@ const ListUserRole = () => {
               </TableCell>
                {!roleRightE && roleRightV &&<TableCell>
             </TableCell>}
+            <TableCell>
+            </TableCell>
             </TableRow>
           </TableHead>
           <TableBody style={{ height: 600 }}>
@@ -520,4 +522,4 @@ const ListUserRole = () => {
   );
 }
 
-export default ListUserRole;
+export default withRouter(ListUserRole);

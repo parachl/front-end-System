@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import SideBar from "./MenuBar/SideBar";
 import { BrowserRouter, Switch, Route,Redirect } from 'react-router-dom';
 import ListIncomeCatalog from "../IncomeCatalog/ListIncomeCatalog";
+import AddIncomeCatalog from "../IncomeCatalog/AddIncomeCatalog";
+import EditIncomeCatalog from "../IncomeCatalog/EditIncomeCatalog";
 import PageTwo from "../pageTwo/PageTwo";
 import ExamRound from "../Exam/ExamRound";
 import AddRole from "../role/AddRole";
@@ -70,6 +72,9 @@ const MainMenu = () => {
         <Route path="/addUserRole" exact component={AddUserRole}></Route>
         <Route path="/editUserRole" exact component={EditUserRole}></Route>
         <Route path="/listIncomeCatalog" exact component={ListIncomeCatalog}></Route>
+        <Route path="/addIncomeCatalog" exact component={AddIncomeCatalog}></Route>
+        <Route path="/editIncomeCatalog" exact component={EditIncomeCatalog}></Route>
+        
       </Switch>
      </Container>
       </div>
