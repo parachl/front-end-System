@@ -5,46 +5,38 @@ import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter,useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
-import styled from "styled-components";
 import { FormGroup, Label, Row, Col,Form,Input,Container } from 'reactstrap';
-import api from "../../api/GetApi";
-import { get } from 'lodash';
 
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
 import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
-import { InputLabelReuse } from '../reuse/InputLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
+import { SelectCustom } from '../reuse/SelectCustom';
+import FormControl from '@material-ui/core/FormControl';
 // import Row from './Rows';
 
 
 const EditIncomeCatalog = () => {
-  const useRowStyles = makeStyles({
+  const useStyles = makeStyles((theme) => ({
     root: {
       '& > *': {
         borderBottom: 'unset',
-      },
-    },
-  });
+      }, formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+      }
+    }
+    }));
+    const classes = useStyles();
   const dispathch = useDispatch();
   const history = useHistory();
 
-  const [code, setCode] = useState('');
+  const [incomeCatalogId, setIncomeCatalogId] = useState('');
   const [name, setName] = useState('');
   const [nameTh, setNameTh] = useState('');
   const [nameEn, setNameEn] = useState('');
@@ -53,11 +45,18 @@ const EditIncomeCatalog = () => {
   const [descriptionEn, setDescriptionEn] = useState('');
   const [taxCatalog, setTaxCatalog] = useState('');
   const [taxRate, setTaxRate] = useState('');
-  const [status, setstatus] = useState('');
+  const [status, setStatus] = useState('');
   const [effectiveDate, setEffectiveDate] = useState(new Date());
   const [updateTime, setUpdateTime] = useState(new Date());
   const [updateUser, setUpdateUser] = useState('');
+  const [listTaxCatalog, setListTaxCatalog] = useState([]);
+  const user = JSON.parse(localStorage.getItem('currentUser'));
   const location = useLocation();
+  let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
+  let taxCatalogs = [];
+  const handleChangeStatus = (event) => {
+    setStatus(event);
+  };
 
   let listRoleMenuAdd = [];
   const styleDivButton = {
@@ -72,7 +71,7 @@ const EditIncomeCatalog = () => {
   };
 
  
-  const initPage = (taxIncomeId) => {
+  const initPage = (incomeCatalogId) => {
     dispathch(showSpinner());
     setTimeout(function () {
       dispathch(hideSpinner())
@@ -83,16 +82,16 @@ const EditIncomeCatalog = () => {
     if (!result) {
       history.push("/main");
     }
-    fetcData(taxIncomeId);
+    fetcData(incomeCatalogId);
   }
 
-  const fetcData = async (taxIncomeId) => {
-    console.log('fetcData taxIncomeId taxIncomeId > ', taxIncomeId);
-    const { status, data } = await AuthenService.callApi("GET").get("/taxIncomeCode/findById?id="+ taxIncomeId);
+  const fetcData = async (incomeCatalogId) => {
+    console.log('fetcData taxIncomeId > ', incomeCatalogId);
+    const { status, data } = await AuthenService.callApi("GET").get("/taxIncomeCode/findById?incomeCatalogId="+ incomeCatalogId);
 
     if (status === 200) {
       console.log('fetcData taxIncomeId data > ', data);
-      setCode(data.code);
+      setIncomeCatalogId(data.incomeCatalogId);
       setName(data.name);
       setNameTh(data.nameTh);
       setNameEn(data.nameEn);
@@ -101,7 +100,7 @@ const EditIncomeCatalog = () => {
       setDescriptionEn(data.descriptionEn);
       setTaxCatalog(data.taxCatalog);
       setTaxRate(data.taxRate);
-      setstatus(data.status);
+      setStatus(data.status);
       setEffectiveDate(new Date(data.effectiveDate));
       if(data.updateTime !== null){
         setUpdateTime(new Date(data.updateTime));
@@ -113,14 +112,36 @@ const EditIncomeCatalog = () => {
 
   }
 
-  useEffect(() => {
-    initPage(location.state.id);
+  const fetcDataTaxCatalog = async () => {
+    const { status, data } = await AuthenService.callApi("GET").get("/taxCatalog/listTaxCatalog");
+    console.log('statusUser > ', status);
+    console.log('dataUser > ', data);
+    if (status === 200) {
+      if (data.listTaxCatalogObj !== null && data.listTaxCatalogObj.length > 0) {
+        for (let i = 0; i < data.listTaxCatalogObj.length; i++) {
 
+          taxCatalogs.push({ show: data.listTaxCatalogObj[i].nameTh, value: data.listTaxCatalogObj[i].taxCatalogId });
+
+        }
+        setListTaxCatalog(taxCatalogs);
+      } else {
+        alert('error');
+      }
+    }
+  }
+
+  const handleChangeTaxCatalog = (event) => {
+    setTaxCatalog(event);
+  };
+
+  useEffect(() => {
+    initPage(location.state.incomeCatalogId);
+    fetcDataTaxCatalog();
   }, []);
 
-  const submitEditTaxIncome = async (code, name,nameTh,nameEn,description,descriptionTh,descriptionEn,taxCatalog,taxRate,status,effectiveDate) => {
-    const taxIncomeCodeObj = {id:location.state.id, code:code, name: name,nameTh:nameTh,nameEn:nameEn,description:description,descriptionTh:descriptionTh,descriptionEn:descriptionEn,taxCatalog:taxCatalog,taxRate:taxRate,status:status,effectiveDate:effectiveDate };
-    if (taxIncomeCodeObj.name === '' || taxIncomeCodeObj.code === ''|| taxIncomeCodeObj.taxCatalog === ''|| taxIncomeCodeObj.taxRate === ''|| taxIncomeCodeObj.effectiveDate === '') {
+  const submitEditTaxIncome = async (incomeCatalogId, name,nameTh,nameEn,description,descriptionTh,descriptionEn,taxCatalog,taxRate,status,effectiveDate) => {
+    const taxIncomeCodeObj = {incomeCatalogId:incomeCatalogId, name: name,nameTh:nameTh,nameEn:nameEn,description:description,descriptionTh:descriptionTh,descriptionEn:descriptionEn,taxCatalog:taxCatalog,taxRate:taxRate,status:status,effectiveDate:effectiveDate };
+    if (taxIncomeCodeObj.name === '' || taxIncomeCodeObj.incomeCatalogId === ''|| taxIncomeCodeObj.taxCatalog === ''|| taxIncomeCodeObj.taxRate === ''|| taxIncomeCodeObj.effectiveDate === '') {
       alert('Please fill in all required fields.');
     }else{
       console.log('taxIncomeCodeObj', taxIncomeCodeObj);
@@ -154,8 +175,8 @@ const EditIncomeCatalog = () => {
             <Row >
             <Col>
                 <Label className="form-group" sm={4}>รหัส</Label>
-                <Input className="form-group" type="text" value={code} onChange={(e) => {
-                    setCode(e.target.value);
+                <Input className="form-group" type="text" value={incomeCatalogId} onChange={(e) => {
+                    setIncomeCatalogId(e.target.value);
                   }} placeholder="with a placeholder" />
                 </Col>
                 <Col>
@@ -203,10 +224,10 @@ const EditIncomeCatalog = () => {
             </Row>
             <Row >
             <Col>
-                <Label className="form-group" sm={4}>ประเภทภาษี</Label>
-                <Input className="form-group" type="text" value={taxCatalog} onChange={(e) => {
-                    setTaxCatalog(e.target.value);
-                  }} placeholder="with a placeholder" />
+            <SelectCustom label="ประเภทภาษี :" value={taxCatalog} listData={listTaxCatalog}
+                        onChange={(e) => {
+                          handleChangeTaxCatalog(e.target.value);
+                        }} style={{ width: 180 }} />
                 </Col>
                 <Col>
                 <Label className="form-group" sm={4}>ตารางภาษี</Label>
@@ -216,28 +237,45 @@ const EditIncomeCatalog = () => {
                 </Col>
             </Row>
             <Row >
-            <Col>
-                <Label className="form-group" sm={4}>สถานะ</Label>
-                <Label className="form-group" sm={4}>Active</Label>
-                {/* <Input className="form-group" type="text" value={status} onChange={(e) => {
-                    setstatus(e.target.value);
-                  }} placeholder="with a placeholder" /> */}
-                </Col>
-                <Col>
-                <Label className="form-group" sm={4}>วันที่มีผล</Label>
-                <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} />
-                </Col>
-            </Row>
-            <Row >
-            <Col>
-                <Label className="form-group" sm={4}>ผู้อัปเดตล่าสุด</Label>
-                <Label className="form-group" sm={4}>{updateUser}</Label>
-                </Col>
-                <Col>
-                <Label className="form-group" sm={4}>วันที่อัปเดตล่าสุด</Label>
-                <DatePicker selected={updateTime} onChange={(date) => setUpdateTime(date)} disabled />
-                </Col>
-            </Row>
+                    <Col>
+                      <SelectCustom label="สถานะ :" value={status} listData={listStatus}
+                        onChange={(e) => {
+                          handleChangeStatus(e.target.value);
+                        }} style={{ width: 180 }} />
+                    </Col>
+                    <Col>
+                      <FormGroup row>
+                        <Label className="form-group" sm={4}>วันที่มีผล  :</Label>
+                        <Col sm={6}>
+                          <FormControl className={classes.formControl}>
+                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row >
+                    <Col>
+                      <FormGroup row>
+                      <Label className="form-group" sm={4}>ผู้อัปเดตล่าสุด  :</Label>
+                        <Col sm={6}>
+                          <FormControl className={classes.formControl}>
+                            <Label className="form-group" sm={4}>{updateUser}</Label>
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup row>
+                      <Label className="form-group" sm={4}>วันที่อัปเดตล่าสุด  :</Label>
+                        <Col sm={6}>
+                          <FormControl className={classes.formControl}>
+                          <DatePicker selected={updateTime} onChange={(date) => setUpdateTime(date)} disabled />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                  </Row>
             </Container>
               </FormGroup>
             </TableRow>
@@ -245,7 +283,7 @@ const EditIncomeCatalog = () => {
         </Table>
       </TableContainer>
       <div style={styleDivButton}>
-        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditTaxIncome(code, name,nameTh,nameEn,description,descriptionTh,descriptionEn,taxCatalog,taxRate,status,effectiveDate)}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditTaxIncome(incomeCatalogId, name,nameTh,nameEn,description,descriptionTh,descriptionEn,taxCatalog,taxRate,status,effectiveDate)}>
           Submit
         </Button>
         <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>

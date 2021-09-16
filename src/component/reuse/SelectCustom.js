@@ -38,7 +38,7 @@ export const SelectCustom = ({ label, value, onChange,listData }) => {
           }}
         >
           {listData !== null && listData.map((data, index) => (
-            <option value={data.value}>{data.status}</option>
+            <option value={data.value}>{data.show}</option>
           ))}
         </NativeSelect>
       </FormControl>

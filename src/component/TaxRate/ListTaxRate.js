@@ -24,7 +24,7 @@ import { green } from '@material-ui/core/colors';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 
-const ListIncomeCatalog = () => {
+const ListTaxRate = () => {
   const useRowStyles = makeStyles({
     root: {
       '& > *': {
@@ -34,27 +34,20 @@ const ListIncomeCatalog = () => {
   });
   const dispathch = useDispatch();
   const history = useHistory();
-  const menus = JSON.parse(localStorage.getItem('listMenu'));
 
   console.log('1');
 
-  const [listGroupRoleMenu, setListGroupRoleMenu] = useState([]);
   const [name, setName] = useState('');
   const [status, setStatus] = useState('active');
-  const [checkedGroupMenu, setCheckedGroupMenu] = useState({});
   const [checkedList, setCheckedList] = useState({});
-  const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
-  const [init, setInit] = useState('');
   const [roleRightA, setRoleRightA] = useState(false);
   const [roleRightE, setRoleRightE] = useState(false);
   const [roleRightD, setRoleRightD] = useState(false);
   const [roleRightV, setRoleRightV] = useState(false);
-  let rowsTaxIncome = [{}];
+  let rowsTaxRate = [{}];
   let listCheckBox = [{}];
-  const [listTaxIncome, setListTaxIncome] = useState([]);
-  // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
-  let listRoleMenuAdd = [];
+  const [listTaxRate, setListTaxRate] = useState([]);
   let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'}];
   const styleDivButton = {
     padding: '20px',
@@ -129,24 +122,23 @@ const ListIncomeCatalog = () => {
   const fetcData = async () => {
     setName('');
     setStatus('active');
-    const { status, data } = await AuthenService.callApi("GET").get("/taxIncomeCode/listTaxIncomeCode");
+    const { status, data } = await AuthenService.callApi("GET").get("/taxRate/listTaxRate");
 
     if (status === 200) {
       console.log('fetcData data 1 > ', data);
-      if (data.listTaxIncomeObj !== null && data.listTaxIncomeObj.length > 0) {
-        for (let i = 0; i < data.listTaxIncomeObj.length; i++) {
-          let current_datetime = new Date(data.listTaxIncomeObj[i].createTime);
+      if (data.listTaxRateObj !== undefined && data.listTaxRateObj.length > 0) {
+        for (let i = 0; i < data.listTaxRateObj.length; i++) {
+          let current_datetime = new Date(data.listTaxRateObj[i].createTime);
           let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
           let formatted_date_u = '';
-          if(data.listTaxIncomeObj[i].updateDate != null){
-            let current_datetime_u = new Date(data.listTaxIncomeObj[i].updateTime);
+          if(data.listTaxRateObj[i].updateDate != null){
+            let current_datetime_u = new Date(data.listTaxRateObj[i].updateTime);
              formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
           }
-          rowsTaxIncome[i] = { incomeCatalogId: data.listTaxIncomeObj[i].incomeCatalogId,name: data.listTaxIncomeObj[i].name,description: data.listTaxIncomeObj[i].description,descriptionTh: data.listTaxIncomeObj[i].descriptionTh,taxCatalog: data.listTaxIncomeObj[i].taxCatalog,taxRate: data.listTaxIncomeObj[i].taxRate, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
-          listCheckBox[i] = {isChecked:false,id: data.listTaxIncomeObj[i].incomeCatalogId};
-          // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
+          rowsTaxRate[i] = { taxRateId: data.listTaxRateObj[i].taxRateId,name: data.listTaxRateObj[i].name,description: data.listTaxRateObj[i].description,descriptionTh: data.listTaxRateObj[i].descriptionTh, createUser: data.listTaxRateObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxRateObj[i].updateUser, status: data.listTaxRateObj[i].status }
+          listCheckBox[i] = {isChecked:false,taxRateId: data.listTaxRateObj[i].taxRateId};
         }
-        setListTaxIncome(rowsTaxIncome);
+        setListTaxRate(rowsTaxRate);
         setCheckedList(listCheckBox);
       }
     } else {
@@ -161,12 +153,12 @@ const ListIncomeCatalog = () => {
 
 useEffect(() => {
   console.log('2');
-  const result = AuthenService.checkPermission('Income Catalog', 'L');
+  const result = AuthenService.checkPermission('Tax Rate', 'L');
   
   if (!result) {
     history.push("/main");
   }
-  const roleRight = AuthenService.checkRoleRight('Income Catalog');
+  const roleRight = AuthenService.checkRoleRight('Tax Rate');
   if(roleRight.indexOf('A') !== -1){
     setRoleRightA(true);
   }
@@ -182,22 +174,22 @@ useEffect(() => {
   fetcData();
 }, []);
 
-const editTaxIncome = (incomeCatalogId) => {
-  console.log('incomeCatalogId >',incomeCatalogId);
-  history.push("/editIncomeCatalog", { incomeCatalogId: incomeCatalogId });
+const editTaxRate = (taxRateId) => {
+  console.log('taxRateId >',taxRateId);
+  history.push("/editTaxRate", { taxRateId: taxRateId });
 }
 
-const deleteTaxIncomeCode = async () => {
+const deleteTaxRate = async () => {
   if(checkedList.length > 0){
-    let listTaxIncomeObj = [];
+    let listTaxRateObj = [];
     for(var f = 0 ; f < checkedList.length ; f++){
       if(checkedList[f].isChecked){
-        listTaxIncomeObj.push({incomeCatalogId:checkedList[f].incomeCatalogId})
+        listTaxRateObj.push({taxRateId:checkedList[f].taxRateId})
       }
     }
-    let taxIncomeCodeObjC = {listTaxIncomeObj};
+    let taxRateCodeObjC = {listTaxRateObj};
 
-    const { status, data } = await AuthenService.callApi("POST").post("/taxIncomeCode/deleteTaxIncomeCode",taxIncomeCodeObjC);
+    const { status, data } = await AuthenService.callApi("POST").post("/taxRate/deleteTaxRate",taxRateCodeObjC);
     if (status === 200) {
       if(data === 'fail'){
         alert('Cannot delete this item because it is used.');
@@ -232,31 +224,31 @@ const changeCheckBoxList = (event, index) => {
 
 }
 
-const searchRole = async (name, statusTaxIncomeCode) => {
-  const taxIncomeCodeObj ={name,status:statusTaxIncomeCode }
-  console.log('searchTaxIncome taxIncomeCodeObj',taxIncomeCodeObj);
-  const { status, data } = await AuthenService.callApi("POST").post("/taxIncomeCode/searchTaxIncomeCode",taxIncomeCodeObj);
-  console.log('searchTaxIncome statusHttp',status);
+const searchRole = async (name, statusTaxRateCode) => {
+  const taxRateCodeObj ={name,status:statusTaxRateCode }
+  console.log('searchTaxRate TaxRateCodeObj',taxRateCodeObj);
+  const { status, data } = await AuthenService.callApi("POST").post("/taxRate/searchTaxRate",taxRateCodeObj);
+  console.log('searchTaxRate statusHttp',status);
   if(status === 200){
-    if (data.listTaxIncomeObj !== null && data.listTaxIncomeObj.length > 0) {
-      console.log('searchTaxIncome in',data);
-      for (let i = 0; i < data.listTaxIncomeObj.length; i++) {
-        let current_datetime = new Date(data.listTaxIncomeObj[i].createTime);
+    if (data.listTaxRateObj !== null && data.listTaxRateObj.length > 0) {
+      console.log('searchTaxRate in',data);
+      for (let i = 0; i < data.listTaxRateObj.length; i++) {
+        let current_datetime = new Date(data.listTaxRateObj[i].createTime);
         let formatted_date_u = '';
-        if(data.listTaxIncomeObj[i].updateTime != null){
-          let current_datetime_u = new Date(data.listTaxIncomeObj[i].updateTime);
+        if(data.listTaxRateObj[i].updateTime != null){
+          let current_datetime_u = new Date(data.listTaxRateObj[i].updateTime);
            formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
         }
         let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
 
-        rowsTaxIncome[i] = { incomeCatalogId: data.listTaxIncomeObj[i].incomeCatalogId,name: data.listTaxIncomeObj[i].name,description: data.listTaxIncomeObj[i].description,descriptionTh: data.listTaxIncomeObj[i].descriptionTh,taxCatalog: data.listTaxIncomeObj[i].taxCatalog,taxRate: data.listTaxIncomeObj[i].taxRate, createUser: data.listTaxIncomeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxIncomeObj[i].updateUser, status: data.listTaxIncomeObj[i].status }
-        listCheckBox[i] = {isChecked:false,id: data.listTaxIncomeObj[i].incomeCatalogId};
+        rowsTaxRate[i] = { taxRateId: data.listTaxRateObj[i].taxRateId,name: data.listTaxRateObj[i].name,description: data.listTaxRateObj[i].description,descriptionTh: data.listTaxRateObj[i].descriptionTh, createUser: data.listTaxRateObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxRateObj[i].updateUser, status: data.listTaxRateObj[i].status }
+        listCheckBox[i] = {isChecked:false,taxRateId: data.listTaxRateObj[i].taxRateId};
       }
-      setListTaxIncome(rowsTaxIncome);
+      setListTaxRate(rowsTaxRate);
       setCheckedList(listCheckBox);
-    }else if(data.listTaxIncomeObj !== null && data.listTaxIncomeObj.length === 0){
-      console.log('searchTaxIncome null',data);
-      setListTaxIncome([]);
+    }else if(data.listTaxRateObj !== null && data.listTaxRateObj.length === 0){
+      console.log('searchTaxRate null',data);
+      setListTaxRate([]);
     }
   }
 }
@@ -267,8 +259,8 @@ const theme = createTheme({
   },
 });
 
-const addIncomeCatalog = () => {
-  history.push("/addIncomeCatalog");
+const addTaxRate= () => {
+  history.push("/addTaxRate");
 }
 
 const [page, setPage] = React.useState(0);
@@ -284,7 +276,7 @@ const handleChangeRowsPerPage = (event) => {
 
 return (
   <PageBox>
-    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>ประเภทรายได้ </tableRow></div>
+    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>ประเภทอัตราภาษี </tableRow></div>
     <div><SearchBox>
         <Row>
           <Col md="auto"><InputLabelReuse label="ชื่อ :" type="text" value={name}
@@ -302,11 +294,11 @@ return (
     </Button></Col>
     <Col></Col>
         </Row></SearchBox></div>
-    <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteTaxIncomeCode()} disabled={!roleRightD}>
+    <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteTaxRate()} disabled={!roleRightD}>
       Delete
     </Button>
     <ThemeProvider theme={theme}>
-    <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addIncomeCatalog()} disabled={!roleRightA}>
+    <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addTaxRate()} disabled={!roleRightA}>
       Add
     </Button>
     </ThemeProvider>
@@ -324,12 +316,6 @@ return (
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
               <p>รายละเอียด (TH)</p>
-            </TableCell> 
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>ประเภทภาษี</p>
-            </TableCell>
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>ตารางภาษี</p>
             </TableCell>
             <TableCell style={{ width: 320, fontSize: 18 }}>
               <p>สถานะ</p>
@@ -343,27 +329,25 @@ return (
           </TableRow>
         </TableHead>
         <TableBody>
-          {listTaxIncome.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((taxIncome,index) => {
+          {listTaxRate.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((TaxRate,index) => {
             return (
-              <TableRow tabIndex={-1} key={taxIncome.incomeCatalogId}>
+              <TableRow tabIndex={-1} key={TaxRate.taxRateId}>
                 <TableCell><Checkbox
                   defaultChecked
                   color="primary" checked={getCheckedList(index)}
                   onChange={(e) => changeCheckBoxList(e, index)}
-                  inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxIncome.status === 'inactive'}
+                  inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={TaxRate.status === 'inactive'}
                 /></TableCell>
-                <TableCell>{taxIncome.incomeCatalogId}</TableCell>
-                <TableCell>{taxIncome.name}</TableCell>
-                <TableCell>{taxIncome.descriptionTh}</TableCell>
-                <TableCell>{taxIncome.taxCatalog}</TableCell>
-                <TableCell>{taxIncome.taxRate}</TableCell>
-                <TableCell>{taxIncome.status === 'active' ? 'Active' : taxIncome.status === 'inactive' ? 'InActive' : ''}</TableCell>
+                <TableCell>{TaxRate.taxRateId}</TableCell>
+                <TableCell>{TaxRate.name}</TableCell>
+                <TableCell>{TaxRate.descriptionTh}</TableCell>
+                <TableCell>{TaxRate.status === 'active' ? 'Active' : TaxRate.status === 'inactive' ? 'InActive' : ''}</TableCell>
                 <TableCell>
-                  {taxIncome.status === 'active' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxIncome(taxIncome.incomeCatalogId)} disabled={!roleRightE}>
+                  {TaxRate.status === 'active' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxRate(TaxRate.taxRateId)} disabled={!roleRightE}>
                     Edit
                   </Button>}</TableCell>
                   <TableCell>
-                  {taxIncome.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxIncome(taxIncome.incomeCatalogId)} disabled={!roleRightV}>
+                  {TaxRate.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxRate(TaxRate.taxRateId)} disabled={!roleRightV}>
                     View
                   </Button>}</TableCell>
                 {/* {columns.map((column) => {
@@ -383,7 +367,7 @@ return (
     <TablePagination
       rowsPerPageOptions={[10, 25, 100]}
       component="div"
-      count={listTaxIncome.length}
+      count={listTaxRate.length}
       rowsPerPage={rowsPerPage}
       page={page}
       onPageChange={handleChangePage}
@@ -393,4 +377,4 @@ return (
 );
 }
 
-export default withRouter(ListIncomeCatalog);
+export default withRouter(ListTaxRate);

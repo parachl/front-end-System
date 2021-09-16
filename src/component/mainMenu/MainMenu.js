@@ -5,6 +5,17 @@ import { BrowserRouter, Switch, Route,Redirect } from 'react-router-dom';
 import ListIncomeCatalog from "../IncomeCatalog/ListIncomeCatalog";
 import AddIncomeCatalog from "../IncomeCatalog/AddIncomeCatalog";
 import EditIncomeCatalog from "../IncomeCatalog/EditIncomeCatalog";
+import ListTaxRate from "../TaxRate/ListTaxRate";
+import AddTaxRate from "../TaxRate/AddTaxRate";
+import EditTaxRate from "../TaxRate/EditTaxRate";
+import ListTaxDeductDetail from "../TaxDeductDetail/ListTaxDeductDetail";
+import ListTaxDeduct from "../TaxDeduct/ListTaxDeduct";
+import AddTaxDeduct from "../TaxDeduct/AddTaxDeduct";
+import EditTaxDeduct from "../TaxDeduct/EditTaxDeduct";
+import ListTaxDeductGroup from "../TaxDeductGroup/ListTaxDeductGroup";
+import AddTaxDeductGroup from "../TaxDeductGroup/AddTaxDeductGroup";
+import EditTaxDeductGroup from "../TaxDeductGroup/EditTaxDeductGroup";
+import ListTaxDeductGroupDetail from "../TaxDeductGroupDetail/ListTaxDeductGroupDetail";
 import PageTwo from "../pageTwo/PageTwo";
 import ExamRound from "../Exam/ExamRound";
 import AddRole from "../role/AddRole";
@@ -74,6 +85,19 @@ const MainMenu = () => {
         <Route path="/listIncomeCatalog" exact component={ListIncomeCatalog}></Route>
         <Route path="/addIncomeCatalog" exact component={AddIncomeCatalog}></Route>
         <Route path="/editIncomeCatalog" exact component={EditIncomeCatalog}></Route>
+        <Route path="/listTaxRate" exact component={ListTaxRate}></Route>
+        <Route path="/addTaxRate" exact component={AddTaxRate}></Route>
+        <Route path="/editTaxRate" exact component={EditTaxRate}></Route>
+
+        <Route path="/listTaxDeduct" exact component={ListTaxDeduct}></Route>
+        <Route path="/addTaxDeduct" exact component={AddTaxDeduct}></Route>
+        <Route path="/editTaxDeduct" exact component={EditTaxDeduct}></Route>
+        <Route path="/listTaxDeductDetail" exact component={ListTaxDeductDetail}></Route>
+        
+        <Route path="/listTaxDeductGroup" exact component={ListTaxDeductGroup}></Route>
+        <Route path="/addTaxDeductGroup" exact component={AddTaxDeductGroup}></Route>
+        <Route path="/editTaxDeductGroup" exact component={EditTaxDeductGroup}></Route>
+        <Route path="/listTaxDeductGroupDetail" exact component={ListTaxDeductGroupDetail}></Route>
         
       </Switch>
      </Container>

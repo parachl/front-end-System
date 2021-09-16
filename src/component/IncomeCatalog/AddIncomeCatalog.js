@@ -31,17 +31,23 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { SelectCustom } from '../reuse/SelectCustom';
+import FormControl from '@material-ui/core/FormControl';
 // import Row from './Rows';
 
 
 const AddIncomeCatalog = () => {
-  const useRowStyles = makeStyles({
+  const useStyles = makeStyles((theme) => ({
     root: {
       '& > *': {
         borderBottom: 'unset',
       },
-    },
-  });
+    }, formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    }
+  }));
+  const classes = useStyles();
   const dispathch = useDispatch();
   const history = useHistory();
 
@@ -54,13 +60,17 @@ const AddIncomeCatalog = () => {
   const [descriptionEn, setDescriptionEn] = useState('');
   const [taxCatalog, setTaxCatalog] = useState('');
   const [taxRate, setTaxRate] = useState('');
-  const [status, setstatus] = useState('');
+  const [status, setStatus] = useState('');
   const [effectiveDate, setEffectiveDate] = useState(new Date());
   const [createTime, setCreateTime] = useState(new Date());
   const [updateUser, setUpdateUser] = useState('');
+  const [listTaxCatalog, setListTaxCatalog] = useState([]);
   const user = JSON.parse(localStorage.getItem('currentUser'));
+  let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
 
   let listRoleMenuAdd = [];
+  let taxCatalogs = [];
+  
   const styleDivButton = {
     padding: '20px',
     display: 'flex',
@@ -70,6 +80,15 @@ const AddIncomeCatalog = () => {
 
   const styleButton = {
     margin: '10px',
+  };
+
+  const handleChangeStatus = (event) => {
+    setStatus(event);
+  };
+
+
+  const handleChangeTaxCatalog = (event) => {
+    setTaxCatalog(event);
   };
   const initPage = () => {
     console.log('3');
@@ -86,9 +105,27 @@ const AddIncomeCatalog = () => {
      
   }
 
+  const fetcDataTaxCatalog = async () => {
+    const { status, data } = await AuthenService.callApi("GET").get("/taxCatalog/listTaxCatalog");
+    console.log('statusUser > ', status);
+    console.log('dataUser > ', data);
+    if (status === 200) {
+      if (data.listTaxCatalogObj !== null && data.listTaxCatalogObj.length > 0) {
+        for (let i = 0; i < data.listTaxCatalogObj.length; i++) {
+
+          taxCatalogs.push({ show: data.listTaxCatalogObj[i].nameTh, value: data.listTaxCatalogObj[i].taxCatalogId });
+
+        }
+        setListTaxCatalog(taxCatalogs);
+      } else {
+        alert('error');
+      }
+    }
+  }
+
   useEffect(() => {
     initPage();
-
+    fetcDataTaxCatalog();
   }, []);
 
   const submitAddTaxIncome = async (code, name,nameTh,nameEn,description,descriptionTh,descriptionEn,taxCatalog,taxRate,status,effectiveDate) => {
@@ -118,7 +155,6 @@ const AddIncomeCatalog = () => {
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
-              {/* <TableCell/> */}
               <TableCell style={{ width: 180, fontSize: 32 }}>ประเภทรายได้ </TableCell>
             </TableRow>
             <TableRow>
@@ -176,10 +212,10 @@ const AddIncomeCatalog = () => {
             </Row>
             <Row >
             <Col>
-                <Label className="form-group" sm={4}>ประเภทภาษี</Label>
-                <Input className="form-group" type="text" value={taxCatalog} onChange={(e) => {
-                    setTaxCatalog(e.target.value);
-                  }} placeholder="with a placeholder" />
+            <SelectCustom label="ประเภทภาษี :" value={taxCatalog} listData={listTaxCatalog}
+                        onChange={(e) => {
+                          handleChangeTaxCatalog(e.target.value);
+                        }} style={{ width: 180 }} />
                 </Col>
                 <Col>
                 <Label className="form-group" sm={4}>ตารางภาษี</Label>
@@ -189,28 +225,45 @@ const AddIncomeCatalog = () => {
                 </Col>
             </Row>
             <Row >
-            <Col>
-                <Label className="form-group" sm={4}>สถานะ</Label>
-                <Label className="form-group" sm={4}>Active</Label>
-                {/* <Input className="form-group" type="text" value={status} onChange={(e) => {
-                    setstatus(e.target.value);
-                  }} placeholder="with a placeholder" /> */}
-                </Col>
-                <Col>
-                <Label className="form-group" sm={4}>วันที่มีผล</Label>
-                <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} />
-                </Col>
-            </Row>
-            <Row >
-            <Col>
-                <Label className="form-group" sm={4}>ผู้สร้าง</Label>
-                <Label className="form-group" sm={4}>{user.name}</Label>
-                </Col>
-                <Col>
-                <Label className="form-group" sm={4}>วันที่สร้างล่าสุด</Label>
-                <DatePicker selected={createTime} onChange={(date) => setCreateTime(date)} disabled />
-                </Col>
-            </Row>
+                    <Col>
+                      <SelectCustom label="สถานะ :" value={status} listData={listStatus}
+                        onChange={(e) => {
+                          handleChangeStatus(e.target.value);
+                        }} style={{ width: 180 }} />
+                    </Col>
+                    <Col>
+                      <FormGroup row>
+                        <Label className="form-group" sm={4}>วันที่มีผล  :</Label>
+                        <Col sm={6}>
+                          <FormControl className={classes.formControl}>
+                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row >
+                    <Col>
+                      <FormGroup row>
+                        <Label className="form-group" sm={4}>ผู้สร้าง  :</Label>
+                        <Col sm={6}>
+                          <FormControl className={classes.formControl}>
+                            <Label className="form-group" sm={4}>{user.name}</Label>
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup row>
+                        <Label className="form-group" sm={4}>วันที่สร้างล่าสุด  :</Label>
+                        <Col sm={6}>
+                          <FormControl className={classes.formControl}>
+                            <DatePicker selected={createTime} onChange={(date) => setCreateTime(date)} disabled />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                  </Row>
             </Container>
               </FormGroup>
             </TableRow>

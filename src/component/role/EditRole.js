@@ -89,10 +89,11 @@ const EditRole = (roleObj) => {
         var index = data.listRoleMenuObj.findIndex((x) => x.menuObj.groupMenuId === menusSetting.listGroupMenu[i].id);
         console.log('fetcDataFindRole index >>', index);
         if (index !== -1) {
-          console.log('fetcDataFindRole in >>', menusSetting.listGroupMenu[i].id);
+          console.log('fetcDataFindRole in >>', menusSetting.listGroupMenu[i]);
           objArray[i] = { id: menusSetting.listGroupMenu[i].id, isChecked: true };
           openArray[i] = { id: menusSetting.listGroupMenu[i].id, open: false };
           if (menusSetting.listGroupMenu[i].listMenu !== null) {
+            let checkAdd = false;
             for (let b = 0; b < menusSetting.listGroupMenu[i].listMenu.length; b++) {
               for (let c = 0; c < data.listRoleMenuObj.length; c++) {
                 if (menusSetting.listGroupMenu[i].listMenu[b].id === data.listRoleMenuObj[c].menuId) {
@@ -115,12 +116,17 @@ const EditRole = (roleObj) => {
 
                   objRoleArray.push({ groupId: menusSetting.listGroupMenu[i].id, menuId: data.listRoleMenuObj[c].menuId, roleId: data.listRoleMenuObj[c].roleId, roleRight: data.listRoleMenuObj[c].roleRight,isCheckedA: isCheckedA,isCheckedE: isCheckedE,isCheckedD: isCheckedD,isCheckedV: isCheckedV });
                   objCheckedArray.push({ isChecked: true, id: menusSetting.listGroupMenu[i].listMenu[b].id });
+                  
+                }else{
+                  if(!checkAdd){
+                    var indexNotIn = data.listRoleMenuObj.findIndex((x) => x.menuId === menusSetting.listGroupMenu[i].listMenu[b].id);
+                    if(indexNotIn === -1){
+                      objRoleArray.push({ groupId: menusSetting.listGroupMenu[i].id, menuId: menusSetting.listGroupMenu[i].listMenu[b].id, roleId: '', roleRight: '',isCheckedA: false,isCheckedE: false,isCheckedD: false,isCheckedV: false });
+                      objCheckedArray.push({ isChecked: false, id: menusSetting.listGroupMenu[i].listMenu[b].id });
+                      checkAdd = true;
+                    }
+                  }
                 } 
-                var indexNotIn = data.listRoleMenuObj.findIndex((x) => x.menuId === menusSetting.listGroupMenu[i].listMenu[b].id);
-                if(indexNotIn === -1){
-                  objRoleArray.push({ groupId: menusSetting.listGroupMenu[i].id, menuId: menusSetting.listGroupMenu[i].listMenu[b].id, roleId: '', roleRight: '',isCheckedA: false,isCheckedE: false,isCheckedD: false,isCheckedV: false });
-                  objCheckedArray.push({ isChecked: false, id: menusSetting.listGroupMenu[i].listMenu[b].id });
-                }
               }
             }
           }
