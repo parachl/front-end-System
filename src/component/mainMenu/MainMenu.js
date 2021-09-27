@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import SideBar from "./MenuBar/SideBar";
-import { BrowserRouter, Switch, Route,Redirect } from 'react-router-dom';
+import { withRouter,BrowserRouter, Switch, Route,Redirect } from 'react-router-dom';
 import ListIncomeCatalog from "../IncomeCatalog/ListIncomeCatalog";
 import AddIncomeCatalog from "../IncomeCatalog/AddIncomeCatalog";
 import EditIncomeCatalog from "../IncomeCatalog/EditIncomeCatalog";
@@ -34,6 +34,12 @@ import { hideSpinner } from '../../action/Constants.action';
 import { authenticationService } from '../../_services/authentication.service';
 import LoginPage from '../login/Login';
 import api from '../../api/GetApi';
+import ListTaxSystemInfo from '../TaxSystemInfo/ListTaxSystemInfo';
+import AddTaxSystemInfo from "../TaxSystemInfo/AddTaxSystemInfo";
+import EditTaxSystemInfo from "../TaxSystemInfo/EditTaxSystemInfo";
+import ListTaxOpcode from '../TaxOpcode/ListTaxOpcode';
+import AddTaxOpcode from "../TaxOpcode/AddTaxOpcode";
+import EditTaxOpcode from "../TaxOpcode/EditTaxOpcode";
 
 const MainMenu = () => {
   const [sidebarIsOpen, setSidebarOpen] = useState(false);
@@ -73,7 +79,39 @@ const MainMenu = () => {
       >
         <Topbar toggleSidebar={toggleSidebar} />
         <Switch>
-        <Route path="/home/homeTwo" exact component={PageTwo}></Route>
+
+        <Route path="/listRole" render={(props) => <ListRole {...props}/> } />
+<Route path="/addRole" render={(props) => <AddRole {...props}/> } />
+<Route path="/editRole" render={(props) => <EditRole {...props}/> } />
+<Route path="/listUserRole" render={(props) => <ListUserRole {...props}/> } />
+<Route path="/addUserRole" render={(props) => <AddUserRole {...props}/> } />
+<Route path="/editUserRole" render={(props) => <EditUserRole {...props}/> } />
+<Route path="/listIncomeCatalog" render={(props) => <ListIncomeCatalog {...props}/> } />
+<Route path="/addIncomeCatalog" render={(props) => <AddIncomeCatalog {...props}/> } />
+<Route path="/editIncomeCatalog" render={(props) => <EditIncomeCatalog {...props}/> } />
+<Route path="/listTaxRate" render={(props) => <ListTaxRate {...props}/> } />
+<Route path="/addTaxRate" render={(props) => <AddTaxRate {...props}/> } />
+<Route path="/editTaxRate" render={(props) => <EditTaxRate {...props}/> } />
+
+<Route path="/listTaxDeduct" render={(props) => <ListTaxDeduct {...props}/> } />
+<Route path="/addTaxDeduct" render={(props) => <AddTaxDeduct {...props}/> } />
+<Route path="/editTaxDeduct" render={(props) => <EditTaxDeduct {...props}/> } />
+<Route path="/listTaxDeductDetail" render={(props) => <ListTaxDeductDetail {...props}/> } />
+
+<Route path="/listTaxDeductGroup" render={(props) => <ListTaxDeductGroup {...props}/> } />
+<Route path="/addTaxDeductGroup" render={(props) => <AddTaxDeductGroup {...props}/> } />
+<Route path="/editTaxDeductGroup" render={(props) => <EditTaxDeductGroup {...props}/> } />
+<Route path="/listTaxDeductGroupDetail" render={(props) => <ListTaxDeductGroupDetail {...props}/> } />
+
+<Route path="/listTaxSystemInfo" render={(props) => <ListTaxSystemInfo {...props}/> } />
+<Route path="/addTaxSystemInfo" render={(props) => <AddTaxSystemInfo {...props}/> } />
+<Route path="/editTaxSystemInfo" render={(props) => <EditTaxSystemInfo {...props}/> } />
+
+<Route path="/listOpcode" render={(props) => <ListTaxOpcode {...props}/> } />
+<Route path="/addTaxOpcode" render={(props) => <AddTaxOpcode {...props}/> } />
+<Route path="/editTaxOpcode" render={(props) => <EditTaxOpcode {...props}/> } />
+        
+        {/* <Route path="/home/homeTwo" exact component={PageTwo}></Route>
         <Route path="/about" exact component={About}></Route>
         <Route path="/examRound" exact component={ExamRound}></Route>
         <Route path="/listRole" exact component={ListRole}></Route>
@@ -98,6 +136,14 @@ const MainMenu = () => {
         <Route path="/addTaxDeductGroup" exact component={AddTaxDeductGroup}></Route>
         <Route path="/editTaxDeductGroup" exact component={EditTaxDeductGroup}></Route>
         <Route path="/listTaxDeductGroupDetail" exact component={ListTaxDeductGroupDetail}></Route>
+
+        <Route path="/listTaxSystemInfo" exact component={ListTaxSystemInfo}></Route>
+        <Route path="/addTaxSystemInfo" exact component={AddTaxSystemInfo}></Route>
+        <Route path="/editTaxSystemInfo" exact component={EditTaxSystemInfo}></Route>
+
+        <Route path="/listOpcode" exact component={ListTaxOpcode}></Route>
+        <Route path="/addTaxOpcode" exact component={AddTaxOpcode}></Route>
+        <Route path="/editTaxOpcode" exact component={EditTaxOpcode}></Route> */}
         
       </Switch>
      </Container>
@@ -109,4 +155,4 @@ const MainMenu = () => {
 }
 
 
-export default MainMenu;
+export default withRouter(MainMenu);

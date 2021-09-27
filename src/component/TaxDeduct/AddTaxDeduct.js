@@ -13,26 +13,17 @@ import { get } from 'lodash';
 
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
 import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
-import { InputLabelReuse } from '../reuse/InputLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SelectCustom } from '../reuse/SelectCustom';
+import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 // import Row from './Rows';
 
 
@@ -67,16 +58,6 @@ const AddTaxDeduct = () => {
   const classes = useStyles();
 
   let listRoleMenuAdd = [];
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
   const initPage = () => {
     console.log('3');
     dispathch(showSpinner());
@@ -235,7 +216,7 @@ const AddTaxDeduct = () => {
         <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxDeduct(taxDeductId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate)}>
           Submit
         </Button>
-        <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
+        <Button variant="contained" color="secondary" style={styleButtonCancel} onClick={() => cancel()}>
           Cancel
         </Button>
       </div>

@@ -7,12 +7,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import store from './store/store';
 import {Provider} from 'react-redux';
+import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
   <Provider store={store}>
-  <React.StrictMode>
+    <BrowserRouter basename={"/tax"}>
+      <React.Fragment>
     <App />
-  </React.StrictMode>
+      </React.Fragment>
+    </BrowserRouter>
   </Provider>,
   document.getElementById('root')
 );

@@ -5,22 +5,15 @@ import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
-import styled from "styled-components";
-import { FormGroup, Label, Row, Col } from 'reactstrap';
-import api from "../../api/GetApi";
+import {  Row, Col } from 'reactstrap';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -34,7 +27,7 @@ import { SelectCustom } from '../reuse/SelectCustom';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import Checkbox from '@material-ui/core/Checkbox';
-import { SignalCellularNull } from '@material-ui/icons';
+import {styleButtonAdd,styleButtonsearch,styleButtonClear,styleButtonEdit,styleButtonDelete,colStatus,styleButtonDeleteUser,styleTextUserName} from '../../themes/style';
 
 const ListUserRole = () => {
   const useRowStyles = makeStyles({
@@ -58,17 +51,12 @@ const ListUserRole = () => {
   });
   const dispathch = useDispatch();
   const history = useHistory();
-  const menus = JSON.parse(localStorage.getItem('listMenu'));
 
   console.log('1');
 
-  const [listGroupRoleMenu, setListGroupRoleMenu] = useState([]);
   const [roleName, setRoleName] = useState('');
-  const [checkedGroupMenu, setCheckedGroupMenu] = useState({});
   const [listRoleByUser, setListRoleByUser] = useState([]);
-  const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
-  const [init, setInit] = useState('');
   let userRoles = [{}];
   const [listUserRole, setListUserRole] = useState([]);
   const [userName, setUserName] = useState('');
@@ -79,74 +67,8 @@ const ListUserRole = () => {
   const [roleRightE, setRoleRightE] = useState(false);
   const [roleRightD, setRoleRightD] = useState(false);
   const [roleRightV, setRoleRightV] = useState(false);
-  let listRoleMenuAdd = [];
   let listCheckBox = [{}];
   let listStatus = [{ status: 'Active', value: 'ST001' }, { status: 'In Active', value: 'ST002' }, { status: 'All', value: '' }];
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButtonAdd = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    color: 'white',
-    background: '#007ac2',
-  };
-
-  const styleButtonSearch = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-  };
-  const styleButtonClear = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-  };
-
-  const styleTextUserName= {
-    width: '350px',
-    marginLeft: '10px',
-    marginBottom: '20px',
-  };
-
-  const styleButtonEdit = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    background: '#007ac2',
-  };
- 
-
-  const styleButtonDelete = {
-    float: 'right',
-    marginRight: '43px',
-    marginBottom: '20px',
-    color: 'white',
-    background:  '#e42313',
-  };
-
-  const styleButtonDeleteUser = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    color: 'white',
-    background:  '#e42313',
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
-
-  const colStatus = {
-    marginLeft: '0px',
-  };
 
   function appendLeadingZeroes(n) {
     if (n <= 9) {
@@ -383,7 +305,7 @@ const ListUserRole = () => {
           <Col><Button variant="contained" color="primary" style={styleButtonClear} onClick={() => fetcData()}>
             Clear
           </Button>
-          <Button variant="contained" color="primary" style={styleButtonSearch} onClick={() => searchUser(userName,roleName, status)}>
+          <Button variant="contained" color="primary" style={styleButtonsearch} onClick={() => searchUser(userName,roleName, status)}>
               Search
             </Button></Col>
         </Row></SearchBox></div>

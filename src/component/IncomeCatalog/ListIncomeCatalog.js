@@ -6,9 +6,8 @@ import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
 import { Row, Col } from 'reactstrap';
-import api from "../../api/GetApi";
 
-import { makeStyles,createTheme,ThemeProvider  } from '@material-ui/core/styles';
+import { makeStyles,ThemeProvider  } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -20,9 +19,19 @@ import { SelectCustom } from '../reuse/SelectCustom';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import TablePagination from '@material-ui/core/TablePagination';
-import { green } from '@material-ui/core/colors';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
+import {styleButtonAdd,styleButtonsearch,styleButtonClear,styleButtonEdit,styleButtonDelete,colStatus,front, headTable} from '../../themes/style';
+
+import  { tableCellClasses } from '@mui/material/TableCell';
+import { styled } from '@mui/material/styles';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import { visuallyHidden } from '@mui/utils';
+import Box from '@mui/material/Box';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 const ListIncomeCatalog = () => {
   const useRowStyles = makeStyles({
@@ -34,18 +43,13 @@ const ListIncomeCatalog = () => {
   });
   const dispathch = useDispatch();
   const history = useHistory();
-  const menus = JSON.parse(localStorage.getItem('listMenu'));
 
   console.log('1');
 
-  const [listGroupRoleMenu, setListGroupRoleMenu] = useState([]);
   const [name, setName] = useState('');
   const [status, setStatus] = useState('active');
-  const [checkedGroupMenu, setCheckedGroupMenu] = useState({});
   const [checkedList, setCheckedList] = useState({});
-  const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
-  const [init, setInit] = useState('');
   const [roleRightA, setRoleRightA] = useState(false);
   const [roleRightE, setRoleRightE] = useState(false);
   const [roleRightD, setRoleRightD] = useState(false);
@@ -53,71 +57,7 @@ const ListIncomeCatalog = () => {
   let rowsTaxIncome = [{}];
   let listCheckBox = [{}];
   const [listTaxIncome, setListTaxIncome] = useState([]);
-  // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
-  let listRoleMenuAdd = [];
   let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'}];
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButtonAdd = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    color: 'white',
-    background: '#007ac2',
-  };
-
-  const styleButtonsearch = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-    
-  };
-  const styleButtonClear = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-  };
-
-  const styleButtonEdit = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    background: '#007ac2',
-  };
-
-  const styleButtonExample = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-    boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-  };
- 
-
-  const styleButtonDelete = {
-    float: 'right',
-    marginRight: '43px',
-    marginBottom: '20px',
-    color: 'white',
-    background:  '#ff1744',
-    
-  };
-  
-
-  const colStatus = {
-    marginLeft: '40px',
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
 
   function appendLeadingZeroes(n) {
     if (n <= 9) {
@@ -261,11 +201,178 @@ const searchRole = async (name, statusTaxIncomeCode) => {
   }
 }
 
-const theme = createTheme({
-  palette: {
-    green: green,
+//-------------------------------------- header table ------------------------------------------------------
+
+const [open, setOpen] = React.useState(true);
+
+const headCells = [
+  {
+    id: 'incomeCatalogId',
+    numeric: false,
+    align: "center",
+    disablePadding: false,
+    label: 'รหัส',
   },
-});
+  {
+    id: 'name',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ชื่อ',
+  },
+  {
+    id: 'descriptionTh',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'รายละเอียด',
+  },
+  {
+    id: 'taxCatalog',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ประเภทภาษี',
+  },
+  {
+    id: 'taxRate',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ตารางภาษี',
+  },
+  {
+    id: 'status',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'สถานะ',
+  },
+  {
+    field: " ",
+    headerName: " ",
+    align: "center",
+    width: 100,
+  },
+  {
+    field: " ",
+    headerName: " ",
+    align: "center",
+    width: 100,
+  }
+];
+
+const handleClick = () => {
+  setOpen(!open);
+};
+
+function EnhancedTableHead(props) {
+  const {  order, orderBy, numSelected, rowCount, onRequestSort } =
+    props;
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    <TableHead >
+      <TableRow >
+        <TableCell padding="checkbox" style={headTable}>
+        </TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+             style={headTable}>
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+  const [selected, setSelected] = React.useState([]);
+  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState('incomeCatalogId');
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = listTaxIncome.map((n) => n.name);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+  function descendingComparator(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function getComparator(order, orderBy) {
+    return order === 'desc'
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  }
+
+  // This method is created for cross-browser compatibility, if you don't
+  // need to support IE11, you can use Array.prototype.sort() directly
+  function stableSort(array, comparator) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) {
+        return order;
+      }
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+  }
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
+
+//-----------------------------------------------------------------------------------------------------------------------------
 
 const addIncomeCatalog = () => {
   history.push("/addIncomeCatalog");
@@ -284,8 +391,10 @@ const handleChangeRowsPerPage = (event) => {
 
 return (
   <PageBox>
-    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>ประเภทรายได้ </tableRow></div>
-    <div><SearchBox>
+    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>ประเภทรายได้ <IconButton style={{ float: 'right', right: '0px', marginBottom: '20px' }} aria-label="expand row" size="small" onClick={() => handleClick()}>
+      filter{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+      </IconButton></tableRow></div>
+      <Collapse in={open} timeout="auto" unmountOnExit><SearchBox>
         <Row>
           <Col md="auto"><InputLabelReuse label="ชื่อ :" type="text" value={name}
             onChange={(e) => {
@@ -301,49 +410,63 @@ return (
       Search
     </Button></Col>
     <Col></Col>
-        </Row></SearchBox></div>
+        </Row></SearchBox></Collapse>
     <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteTaxIncomeCode()} disabled={!roleRightD}>
       Delete
     </Button>
-    <ThemeProvider theme={theme}>
+    
+    <ThemeProvider>
     <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addIncomeCatalog()} disabled={!roleRightA}>
       Add
     </Button>
     </ThemeProvider>
-    <TableContainer className={classes.container} style={{ height: 600 }}>
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-          <TableCell style={{ width: 320, fontSize: 18 }}>
-            </TableCell>
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>รหัส</p>
-            </TableCell>
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>ชื่อ</p>
-            </TableCell>
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>รายละเอียด (TH)</p>
-            </TableCell> 
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>ประเภทภาษี</p>
-            </TableCell>
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>ตารางภาษี</p>
-            </TableCell>
-            <TableCell style={{ width: 320, fontSize: 18 }}>
-              <p>สถานะ</p>
-            </TableCell>
-            <TableCell>
-            </TableCell>
-            {!roleRightE && roleRightV &&<TableCell style={{ width: 320, fontSize: 18 }}>
-            </TableCell>}
-            <TableCell>
-            </TableCell>
-          </TableRow>
-        </TableHead>
+        <TableContainer className={classes.container} style={{ height: 600 }}>
+        <Table style={{ border: '1px solid #D3D3D3' }} stickyHeader aria-label="sticky table" >
+          <EnhancedTableHead
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={listTaxIncome.length}
+          />
         <TableBody>
-          {listTaxIncome.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((taxIncome,index) => {
+        {stableSort(listTaxIncome, getComparator(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((taxIncome, index) => {
+                const labelId = `enhanced-table-checkbox-${index}`;
+                return (
+                  <StyledTableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        defaultChecked
+                        color="primary" checked={getCheckedList(index)}
+                        onChange={(e) => changeCheckBoxList(e, index)}
+                        inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxIncome.status === 'inactive'}
+                      />
+                    </TableCell>
+                    <TableCell
+                      component="th"
+                      id={labelId}
+                      scope="row" style={front}>
+                      {taxIncome.incomeCatalogId}
+                    </TableCell>
+                    <TableCell>{taxIncome.name}</TableCell>
+                <TableCell>{taxIncome.descriptionTh}</TableCell>
+                <TableCell>{taxIncome.taxCatalog}</TableCell>
+                <TableCell>{taxIncome.taxRate}</TableCell>
+                <TableCell>{taxIncome.status === 'active' ? 'Active' : taxIncome.status === 'inactive' ? 'InActive' : ''}</TableCell>
+                <TableCell>
+                  {taxIncome.status === 'active' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxIncome(taxIncome.incomeCatalogId)} disabled={!roleRightE}>
+                    Edit
+                  </Button>}</TableCell>
+                  <TableCell>
+                  {taxIncome.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxIncome(taxIncome.incomeCatalogId)} disabled={!roleRightV}>
+                    View
+                  </Button>}</TableCell>
+                  </StyledTableRow>);
+              })}
+          {/* {listTaxIncome.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((taxIncome,index) => {
             return (
               <TableRow tabIndex={-1} key={taxIncome.incomeCatalogId}>
                 <TableCell><Checkbox
@@ -366,17 +489,9 @@ return (
                   {taxIncome.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxIncome(taxIncome.incomeCatalogId)} disabled={!roleRightV}>
                     View
                   </Button>}</TableCell>
-                {/* {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      );
-                    })} */}
               </TableRow>
             );
-          })}
+          })} */}
         </TableBody>
       </Table>
     </TableContainer>

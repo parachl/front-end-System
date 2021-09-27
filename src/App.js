@@ -29,7 +29,7 @@ function App() {
 
   return (
     
-     <BrowserRouter basename="/tax">
+     <BrowserRouter>
       {/* <BrowserRouter > */}
     <FullPageLoader/>
     {/* <div className="Main wrapper"> */}

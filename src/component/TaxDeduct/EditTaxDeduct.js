@@ -32,6 +32,7 @@ import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
 import { SelectCustom } from '../reuse/SelectCustom';
 import FormControl from '@material-ui/core/FormControl';
+import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 // import Row from './Rows';
 
 
@@ -63,18 +64,6 @@ const EditTaxDeduct = () => {
   const location = useLocation();
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
   const user = JSON.parse(localStorage.getItem('currentUser'));
-
-  let listRoleMenuAdd = [];
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
 
   const classes = useStyles();
  
@@ -259,7 +248,7 @@ const EditTaxDeduct = () => {
         <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditTaxDeduct(taxDeductId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate)}>
           Submit
         </Button>
-        <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
+        <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
           Cancel
         </Button>
       </div>

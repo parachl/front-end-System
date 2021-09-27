@@ -35,7 +35,7 @@ import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-const ListTaxDeductGroup = () => {
+const ListTaxOpcode = () => {
   const useRowStyles = makeStyles({
     root: {
       '& > *': {
@@ -56,10 +56,11 @@ const ListTaxDeductGroup = () => {
   const [roleRightE, setRoleRightE] = useState(false);
   const [roleRightD, setRoleRightD] = useState(false);
   const [roleRightV, setRoleRightV] = useState(false);
-  let rowsTaxDeductGroup = [{}];
+  let rowsTaxOpcode = [{}];
   let listCheckBox = [{}];
-  const [listTaxDeductGroup, setListTaxDeductGroup] = useState([]);
+  const [listTaxOpcode, setListTaxOpcode] = useState([]);
   let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'}];
+
 
   function appendLeadingZeroes(n) {
     if (n <= 9) {
@@ -71,23 +72,23 @@ const ListTaxDeductGroup = () => {
   const fetcData = async () => {
     setName('');
     setStatus('active');
-    const { status, data } = await AuthenService.callApi("GET").get("/taxDeductGroup/listTaxDeductGroup");
+    const { status, data } = await AuthenService.callApi("GET").get("/taxOpcode/listTaxOpcode");
 
     if (status === 200) {
       console.log('fetcData data 1 > ', data);
-      if (data.listTaxDeductGroupObj !== undefined && data.listTaxDeductGroupObj.length > 0) {
-        for (let i = 0; i < data.listTaxDeductGroupObj.length; i++) {
-          let current_datetime = new Date(data.listTaxDeductGroupObj[i].createTime);
+      if (data.listTaxOpcodeObj !== undefined && data.listTaxOpcodeObj.length > 0) {
+        for (let i = 0; i < data.listTaxOpcodeObj.length; i++) {
+          let current_datetime = new Date(data.listTaxOpcodeObj[i].createTime);
           let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
           let formatted_date_u = '';
-          if(data.listTaxDeductGroupObj[i].updateDate != null){
-            let current_datetime_u = new Date(data.listTaxDeductGroupObj[i].updateTime);
+          if(data.listTaxOpcodeObj[i].updateDate != null){
+            let current_datetime_u = new Date(data.listTaxOpcodeObj[i].updateTime);
              formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
           }
-          rowsTaxDeductGroup[i] = { deductGroupId: data.listTaxDeductGroupObj[i].deductGroupId,name: data.listTaxDeductGroupObj[i].name,description: data.listTaxDeductGroupObj[i].description,amount: data.listTaxDeductGroupObj[i].amount,descriptionTh: data.listTaxDeductGroupObj[i].descriptionTh, createUser: data.listTaxDeductGroupObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxDeductGroupObj[i].updateUser, status: data.listTaxDeductGroupObj[i].status }
-          listCheckBox[i] = {isChecked:false,deductGroupId: data.listTaxDeductGroupObj[i].deductGroupId};
+          rowsTaxOpcode[i] = { opcode: data.listTaxOpcodeObj[i].opcode,name: data.listTaxOpcodeObj[i].name,groupType: data.listTaxOpcodeObj[i].groupType,opcodeType: data.listTaxOpcodeObj[i].opcodeType,netType: data.listTaxOpcodeObj[i].netType,incomeCatalogId: data.listTaxOpcodeObj[i].incomeCatalogId,minRate: data.listTaxOpcodeObj[i].minRate,maxRate: data.listTaxOpcodeObj[i].maxRate,minBaht: data.listTaxOpcodeObj[i].minBaht,maxBaht: data.listTaxOpcodeObj[i].maxBaht,calTax: data.listTaxOpcodeObj[i].calTax,calSoc: data.listTaxOpcodeObj[i].calSoc,requireDocNo: data.listTaxOpcodeObj[i].requireDocNo, createUser: data.listTaxOpcodeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxOpcodeObj[i].updateUser, status: data.listTaxOpcodeObj[i].status }
+          listCheckBox[i] = {isChecked:false,opcode: data.listTaxOpcodeObj[i].opcode};
         }
-        setListTaxDeductGroup(rowsTaxDeductGroup);
+        setListTaxOpcode(rowsTaxOpcode);
         setCheckedList(listCheckBox);
       }
     } else {
@@ -102,12 +103,12 @@ const ListTaxDeductGroup = () => {
 
 useEffect(() => {
   console.log('2');
-  const result = AuthenService.checkPermission('Tax Deduct Group', 'L');
+  const result = AuthenService.checkPermission('OP Code', 'L');
   
   if (!result) {
     history.push("/main");
   }
-  const roleRight = AuthenService.checkRoleRight('Tax Deduct Group');
+  const roleRight = AuthenService.checkRoleRight('OP Code');
   if(roleRight.indexOf('A') !== -1){
     setRoleRightA(true);
   }
@@ -123,22 +124,22 @@ useEffect(() => {
   fetcData();
 }, []);
 
-const editTaxDeductGroup = (deductGroupId) => {
-  console.log('deductGroupId >',deductGroupId);
-  history.push("/editTaxDeductGroup", { deductGroupId: deductGroupId });
+const editTaxOpcode = (opcode) => {
+  console.log('opcode >',opcode);
+  history.push("/editTaxOpcode", { opcode: opcode });
 }
 
-const deleteTaxDeductGroup = async () => {
+const deleteTaxOpcode = async () => {
   if(checkedList.length > 0){
-    let listTaxDeductGroupObj = [];
+    let listTaxOpcodeObj = [];
     for(var f = 0 ; f < checkedList.length ; f++){
       if(checkedList[f].isChecked){
-        listTaxDeductGroupObj.push({deductGroupId:checkedList[f].deductGroupId})
+        listTaxOpcodeObj.push({opcode:checkedList[f].opcode})
       }
     }
-    let taxDeductGroupCodeObjC = {listTaxDeductGroupObj};
+    let taxOpcodeCodeObjC = {listTaxOpcodeObj};
 
-    const { status, data } = await AuthenService.callApi("POST").post("/taxDeductGroup/deleteTaxDeductGroup",taxDeductGroupCodeObjC);
+    const { status, data } = await AuthenService.callApi("POST").post("/taxOpcode/deleteTaxOpcode",taxOpcodeCodeObjC);
     if (status === 200) {
       if(data === 'fail'){
         alert('Cannot delete this item because it is used.');
@@ -173,13 +174,42 @@ const changeCheckBoxList = (event, index) => {
 
 }
 
+const searchRole = async (name, statusTaxOpcode) => {
+  const taxOpcodeObj ={name,status:statusTaxOpcode }
+  console.log('searchTaxOpcode TaxOpcodeCodeObj',taxOpcodeObj);
+  const { status, data } = await AuthenService.callApi("POST").post("/taxOpcode/searchTaxOpcode",taxOpcodeObj);
+  console.log('searchTaxOpcode statusHttp',status);
+  if(status === 200){
+    if (data.listTaxOpcodeObj !== null && data.listTaxOpcodeObj.length > 0) {
+      console.log('searchTaxOpcode in',data);
+      for (let i = 0; i < data.listTaxOpcodeObj.length; i++) {
+        let current_datetime = new Date(data.listTaxOpcodeObj[i].createTime);
+        let formatted_date_u = '';
+        if(data.listTaxOpcodeObj[i].updateTime != null){
+          let current_datetime_u = new Date(data.listTaxOpcodeObj[i].updateTime);
+           formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
+        }
+        let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
+
+        rowsTaxOpcode[i] = { opcode: data.listTaxOpcodeObj[i].opcode,name: data.listTaxOpcodeObj[i].name,groupType: data.listTaxOpcodeObj[i].groupType,opcodeType: data.listTaxOpcodeObj[i].opcodeType,netType: data.listTaxOpcodeObj[i].netType,incomeCatalogId: data.listTaxOpcodeObj[i].incomeCatalogId,minRate: data.listTaxOpcodeObj[i].minRate,maxRate: data.listTaxOpcodeObj[i].maxRate,minBaht: data.listTaxOpcodeObj[i].minBaht,maxBaht: data.listTaxOpcodeObj[i].maxBaht,calTax: data.listTaxOpcodeObj[i].calTax,calSoc: data.listTaxOpcodeObj[i].calSoc,requireDocNo: data.listTaxOpcodeObj[i].requireDocNo, createUser: data.listTaxOpcodeObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxOpcodeObj[i].updateUser, status: data.listTaxOpcodeObj[i].status }
+        listCheckBox[i] = {isChecked:false,opcode: data.listTaxOpcodeObj[i].opcode};
+      }
+      setListTaxOpcode(rowsTaxOpcode);
+      setCheckedList(listCheckBox);
+    }else if(data.listTaxOpcodeObj !== null && data.listTaxOpcodeObj.length === 0){
+      console.log('searchTaxOpcode null',data);
+      setListTaxOpcode([]);
+    }
+  }
+}
+
 //-------------------------------------- header table ------------------------------------------------------
 
 const [open, setOpen] = React.useState(true);
 
 const headCells = [
   {
-    id: 'deductGroupId',
+    id: 'opcode',
     numeric: false,
     align: "center",
     disablePadding: false,
@@ -193,18 +223,60 @@ const headCells = [
     label: 'ชื่อ',
   },
   {
-    id: 'descriptionTh',
+    id: 'groupType',
     numeric: false,
     disablePadding: false,
     align: "center",
-    label: 'รายละเอียด',
+    label: 'Group',
   },
   {
-    id: 'amount',
+    id: 'opcodeType',
     numeric: false,
     disablePadding: false,
     align: "center",
-    label: 'จำนวนเงินรวมไม่เกิน',
+    label: 'Type',
+  },
+  {
+    id: 'netType',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'NetType',
+  },
+  {
+    id: 'incomeCatalogId',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ประเภทเงินได้',
+  },
+  {
+    id: 'minRate',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'Min(%)',
+  },
+  {
+    id: 'maxRate',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'Max(%)',
+  },
+  {
+    id: 'calSoc',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'คำนวณประกันสังคม',
+  },
+  {
+    id: 'calTax',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'คำนวณภาษี',
   },
   {
     id: 'status',
@@ -226,7 +298,6 @@ const headCells = [
     width: 100,
   }
 ];
-
 const handleClick = () => {
   setOpen(!open);
 };
@@ -271,11 +342,11 @@ function EnhancedTableHead(props) {
 
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('deductGroupId');
+  const [orderBy, setOrderBy] = React.useState('opcode');
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = listTaxDeductGroup.map((n) => n.name);
+      const newSelecteds = listTaxOpcode.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -339,43 +410,8 @@ function EnhancedTableHead(props) {
 
 //-----------------------------------------------------------------------------------------------------------------------------
 
-const searchRole = async (name, statusTaxDeductGroupCode) => {
-  const TaxDeductGroupCodeObj ={name,status:statusTaxDeductGroupCode }
-  console.log('searchTaxDeductGroup TaxDeductGroupCodeObj',TaxDeductGroupCodeObj);
-  const { status, data } = await AuthenService.callApi("POST").post("/taxDeductGroup/searchTaxDeductGroup",TaxDeductGroupCodeObj);
-  console.log('searchTaxDeductGroup statusHttp',status);
-  if(status === 200){
-    if (data.listTaxDeductGroupObj !== null && data.listTaxDeductGroupObj.length > 0) {
-      console.log('searchTaxDeductGroup in',data);
-      for (let i = 0; i < data.listTaxDeductGroupObj.length; i++) {
-        let current_datetime = new Date(data.listTaxDeductGroupObj[i].createTime);
-        let formatted_date_u = '';
-        if(data.listTaxDeductGroupObj[i].updateTime != null){
-          let current_datetime_u = new Date(data.listTaxDeductGroupObj[i].updateTime);
-           formatted_date_u = appendLeadingZeroes((current_datetime_u.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime_u.getDate()) + "-" + current_datetime_u.getFullYear() + " " + current_datetime_u.getHours() + ":" + current_datetime_u.getMinutes() + ":" + current_datetime_u.getSeconds();
-        }
-        let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
-
-        rowsTaxDeductGroup[i] = { deductGroupId: data.listTaxDeductGroupObj[i].deductGroupId,name: data.listTaxDeductGroupObj[i].name,description: data.listTaxDeductGroupObj[i].description,descriptionTh: data.listTaxDeductGroupObj[i].descriptionTh,amount: data.listTaxDeductGroupObj[i].amount, createUser: data.listTaxDeductGroupObj[i].createUser, createTime: formatted_date, updateTime: formatted_date_u, updateUser: data.listTaxDeductGroupObj[i].updateUser, status: data.listTaxDeductGroupObj[i].status }
-        listCheckBox[i] = {isChecked:false,deductGroupId: data.listTaxDeductGroupObj[i].deductGroupId};
-      }
-      setListTaxDeductGroup(rowsTaxDeductGroup);
-      setCheckedList(listCheckBox);
-    }else if(data.listTaxDeductGroupObj !== null && data.listTaxDeductGroupObj.length === 0){
-      console.log('searchTaxDeductGroup null',data);
-      setListTaxDeductGroup([]);
-    }
-  }
-}
-
-const theme = createTheme({
-  palette: {
-    green: green,
-  },
-});
-
-const addTaxDeductGroup= () => {
-  history.push("/addTaxDeductGroup");
+const addTaxOpcode= () => {
+  history.push("/addTaxOpcode");
 }
 
 const [page, setPage] = React.useState(0);
@@ -391,7 +427,7 @@ const handleChangeRowsPerPage = (event) => {
 
 return (
   <PageBox>
-    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>กลุ่มลดหย่อนภาษี <IconButton style={{ float: 'right', right: '0px', marginBottom: '20px' }} aria-label="expand row" size="small" onClick={() => handleClick()}>
+    <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>รหัสระบบงาน <IconButton style={{ float: 'right', right: '0px', marginBottom: '20px' }} aria-label="expand row" size="small" onClick={() => handleClick()}>
       filter{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
       </IconButton></tableRow></div>
       <Collapse in={open} timeout="auto" unmountOnExit><SearchBox>
@@ -410,13 +446,12 @@ return (
       Search
     </Button></Col>
     <Col></Col>
-        </Row></SearchBox>
-        </Collapse>
-    <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteTaxDeductGroup()} disabled={!roleRightD}>
+    </Row></SearchBox></Collapse>
+    <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteTaxOpcode()} disabled={!roleRightD}>
       Delete
     </Button>
-    <ThemeProvider theme={theme}>
-    <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addTaxDeductGroup()} disabled={!roleRightA}>
+    <ThemeProvider>
+    <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addTaxOpcode()} disabled={!roleRightA}>
       Add
     </Button>
     </ThemeProvider>
@@ -428,12 +463,59 @@ return (
             orderBy={orderBy}
             onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
-            rowCount={listTaxDeductGroup.length}
+            rowCount={listTaxOpcode.length}
           />
+    {/* <TableContainer className={classes.container} style={{ height: 600 }}>
+      <Table stickyHeader aria-label="sticky table">
+        <TableHead>
+          <TableRow>
+          <TableCell style={{ width: 320, fontSize: 18 }}>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>รหัส</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>ชื่อ</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>Group</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>Type</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>NetType</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>ประเภทเงินได้</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>Min(%)</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>Max(%)</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>Cal SOC</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>Cal TAX</p>
+            </TableCell>
+            <TableCell style={{ width: 320, fontSize: 18 }}>
+              <p>สถานะ</p>
+            </TableCell>
+            <TableCell>
+            </TableCell>
+            {!roleRightE && roleRightV &&<TableCell style={{ width: 320, fontSize: 18 }}>
+            </TableCell>}
+            <TableCell>
+            </TableCell>
+          </TableRow>
+        </TableHead> */}
         <TableBody>
-        {stableSort(listTaxDeductGroup, getComparator(order, orderBy))
+        {stableSort(listTaxOpcode, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((taxDeductGroup, index) => {
+              .map((taxOpcode, index) => {
                 const labelId = `enhanced-table-checkbox-${index}`;
                 return (
                   <StyledTableRow>
@@ -442,70 +524,73 @@ return (
                         defaultChecked
                         color="primary" checked={getCheckedList(index)}
                         onChange={(e) => changeCheckBoxList(e, index)}
-                        inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxDeductGroup.status === 'inactive'}
+                        inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxOpcode.status === 'inactive'}
                       />
                     </TableCell>
                     <TableCell
                       component="th"
                       id={labelId}
                       scope="row" style={front}>
-                      {taxDeductGroup.deductGroupId}
+                      {taxOpcode.opcode}
                     </TableCell>
-                <TableCell>{taxDeductGroup.name}</TableCell>
-                <TableCell>{taxDeductGroup.descriptionTh}</TableCell>
-                <TableCell>{taxDeductGroup.amount}</TableCell>
-                <TableCell>{taxDeductGroup.status === 'active' ? 'Active' : taxDeductGroup.status === 'inactive' ? 'InActive' : ''}</TableCell>
-                    <TableCell >
-                      {taxDeductGroup.status === 'active' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxDeductGroup(taxDeductGroup.taxDeductId)} disabled={!roleRightE}>
-                        Edit
-                      </Button>}</TableCell>
+                <TableCell>{taxOpcode.name}</TableCell>
+                <TableCell>{taxOpcode.groupType}</TableCell>
+                <TableCell>{taxOpcode.opcodeType}</TableCell>
+                <TableCell>{taxOpcode.netType}</TableCell>
+                <TableCell>{taxOpcode.incomeCatalogId}</TableCell>
+                <TableCell>{taxOpcode.minRate}</TableCell>
+                <TableCell>{taxOpcode.maxRate}</TableCell>
+                <TableCell>{taxOpcode.calSoc === true ? 'Y' : taxOpcode.calSoc === false ? 'N' : ''}</TableCell>
+                <TableCell>{taxOpcode.calTax === true ? 'Y' : taxOpcode.calTax === false ? 'N' : ''}</TableCell>
+                <TableCell>{taxOpcode.status === 'active' ? 'Active' : taxOpcode.status === 'inactive' ? 'InActive' : ''}</TableCell>
                     <TableCell>
-                      {taxDeductGroup.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxDeductGroup(taxDeductGroup.taxDeductId)} disabled={!roleRightV}>
-                        View
-                      </Button>}</TableCell>
+                  {taxOpcode.status === 'active' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxOpcode(taxOpcode.opcode)} disabled={!roleRightE}>
+                    Edit
+                  </Button>}</TableCell>
+                  <TableCell>
+                  {taxOpcode.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxOpcode(taxOpcode.opcode)} disabled={!roleRightV}>
+                    View
+                  </Button>}</TableCell>
                   </StyledTableRow>);
               })}
-
-          {/* {listTaxDeductGroup.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((taxDeductGroup,index) => {
+          {/* {listTaxOpcode.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((taxOpcode,index) => {
             return (
-              <TableRow tabIndex={-1} key={taxDeductGroup.deductGroupId}>
+              <TableRow tabIndex={-1} key={taxOpcode.opcode}>
                 <TableCell><Checkbox
                   defaultChecked
                   color="primary" checked={getCheckedList(index)}
                   onChange={(e) => changeCheckBoxList(e, index)}
-                  inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxDeductGroup.status === 'inactive'}
+                  inputProps={{ 'aria-label': 'secondary checkbox' }} disabled={taxOpcode.status === 'inactive'}
                 /></TableCell>
-                <TableCell>{taxDeductGroup.deductGroupId}</TableCell>
-                <TableCell>{taxDeductGroup.name}</TableCell>
-                <TableCell>{taxDeductGroup.descriptionTh}</TableCell>
-                <TableCell>{taxDeductGroup.amount}</TableCell>
-                <TableCell>{taxDeductGroup.status === 'active' ? 'Active' : taxDeductGroup.status === 'inactive' ? 'InActive' : ''}</TableCell>
+                <TableCell>{taxOpcode.opcode}</TableCell>
+                <TableCell>{taxOpcode.name}</TableCell>
+                <TableCell>{taxOpcode.groupType}</TableCell>
+                <TableCell>{taxOpcode.opcodeType}</TableCell>
+                <TableCell>{taxOpcode.netType}</TableCell>
+                <TableCell>{taxOpcode.incomeCatalogId}</TableCell>
+                <TableCell>{taxOpcode.minRate}</TableCell>
+                <TableCell>{taxOpcode.maxRate}</TableCell>
+                <TableCell>{taxOpcode.calSoc === true ? 'Y' : taxOpcode.calSoc === false ? 'N' : ''}</TableCell>
+                <TableCell>{taxOpcode.calTax === true ? 'Y' : taxOpcode.calTax === false ? 'N' : ''}</TableCell>
+                <TableCell>{taxOpcode.status === 'active' ? 'Active' : taxOpcode.status === 'inactive' ? 'InActive' : ''}</TableCell>
                 <TableCell>
-                  {taxDeductGroup.status === 'active' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxDeductGroup(taxDeductGroup.deductGroupId)} disabled={!roleRightE}>
+                  {taxOpcode.status === 'active' && roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxOpcode(taxOpcode.opcode)} disabled={!roleRightE}>
                     Edit
                   </Button>}</TableCell>
                   <TableCell>
-                  {taxDeductGroup.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxDeductGroup(taxDeductGroup.deductGroupId)} disabled={!roleRightV}>
+                  {taxOpcode.status === 'active' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxOpcode(taxOpcode.opcode)} disabled={!roleRightV}>
                     View
                   </Button>}</TableCell>
-                {/* {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      );
-                    })} */}
-              {/* </TableRow> */}
-            {/* ); */}
-          {/* })}  */}
+              </TableRow>
+            );
+          })} */}
         </TableBody>
       </Table>
     </TableContainer>
     <TablePagination
       rowsPerPageOptions={[10, 25, 100]}
       component="div"
-      count={listTaxDeductGroup.length}
+      count={listTaxOpcode.length}
       rowsPerPage={rowsPerPage}
       page={page}
       onPageChange={handleChangePage}
@@ -515,4 +600,4 @@ return (
 );
 }
 
-export default withRouter(ListTaxDeductGroup);
+export default withRouter(ListTaxOpcode);

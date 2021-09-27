@@ -6,9 +6,8 @@ import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
 import { Row, Col } from 'reactstrap';
-import api from "../../api/GetApi";
 
-import { makeStyles,createTheme,ThemeProvider  } from '@material-ui/core/styles';
+import { makeStyles,ThemeProvider  } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -20,9 +19,9 @@ import { SelectCustom } from '../reuse/SelectCustom';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import TablePagination from '@material-ui/core/TablePagination';
-import { green } from '@material-ui/core/colors';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
+import {styleButtonAdd,styleButtonsearch,styleButtonClear,styleButtonEdit,styleButtonDelete,colStatus} from '../../themes/style';
 import './Role.css';
 
 const ListRole = () => {
@@ -35,18 +34,11 @@ const ListRole = () => {
   });
   const dispathch = useDispatch();
   const history = useHistory();
-  const menus = JSON.parse(localStorage.getItem('listMenu'));
 
-  console.log('1');
-
-  const [listGroupRoleMenu, setListGroupRoleMenu] = useState([]);
   const [roleName, setRoleName] = useState('');
   const [status, setStatus] = useState('');
-  const [checkedGroupMenu, setCheckedGroupMenu] = useState({});
   const [checkedList, setCheckedList] = useState({});
-  const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
-  const [init, setInit] = useState('');
   const [roleRightA, setRoleRightA] = useState(false);
   const [roleRightE, setRoleRightE] = useState(false);
   const [roleRightD, setRoleRightD] = useState(false);
@@ -54,64 +46,8 @@ const ListRole = () => {
   let rowsRole = [{}];
   let listCheckBox = [{}];
   const [listRole, setListRole] = useState([]);
-  // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
-  let listRoleMenuAdd = [];
   let listStatus = [{status:'Active',value:'ST001'},{status:'In Active',value:'ST002'},{status:'All',value:''}];
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButtonAdd = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    color: 'white',
-    background: '#007ac2',
-  };
-
-  const styleButtonsearch = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-    
-  };
-  const styleButtonClear = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-  };
-
-  const styleButtonEdit = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    background: '#007ac2',
-  };
- 
-
-  const styleButtonDelete = {
-    float: 'right',
-    marginRight: '43px',
-    marginBottom: '20px',
-    color: 'white',
-    background:  '#e42313',
-    
-  };
   
-
-  const colStatus = {
-    marginLeft: '40px',
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
-
   function appendLeadingZeroes(n) {
     if (n <= 9) {
       return "0" + n;
@@ -226,12 +162,9 @@ const changeCheckBoxList = (event, index) => {
 
 const searchRole = async (roleName, statusRole) => {
   const roleObj ={roleName,status:statusRole }
-  console.log('searchRole roleObj',roleObj);
   const { status, data } = await AuthenService.callApi("POST").post("/role/searchRole",roleObj);
-  console.log('searchRole statusHttp',status);
   if(status === 200){
     if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
-      console.log('searchRole in',data);
       for (let i = 0; i < data.listRoleObj.length; i++) {
         let current_datetime = new Date(data.listRoleObj[i].createDate);
         let formatted_date_u = '';
@@ -247,17 +180,11 @@ const searchRole = async (roleName, statusRole) => {
       setListRole(rowsRole);
       setCheckedList(listCheckBox);
     }else if(data.listRoleObj !== null && data.listRoleObj.length === 0){
-      console.log('searchRole null',data);
       setListRole([]);
     }
   }
 }
 
-const theme = createTheme({
-  palette: {
-    green: green,
-  },
-});
 
 const addRole = () => {
   history.push("/addRole");
@@ -297,7 +224,7 @@ return (
     <Button variant="contained" startIcon={<DeleteIcon />}  style={styleButtonDelete} onClick={() => deleteUserRole()} disabled={!roleRightD}>
       Delete
     </Button>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
     <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => addRole()} disabled={!roleRightA}>
       Add
     </Button>
@@ -358,14 +285,6 @@ return (
                   {role.status === 'ST001' && !roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editUser(role.id)} disabled={!roleRightV}>
                     View
                   </Button>}</TableCell>
-                {/* {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      );
-                    })} */}
               </TableRow>
             );
           })}

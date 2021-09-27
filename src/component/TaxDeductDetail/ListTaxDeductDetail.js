@@ -33,8 +33,17 @@ import Slide from '@material-ui/core/Slide';
 import { FormGroup, Label, Col, Row, Form, Input, Container } from 'reactstrap';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import {styleButtonAdd,styleDivButton,styleButtonEdit,styleButtonDelete,styleButton,styleSelect,styleButtonCancel,front, headTable} from '../../themes/style';
 
-
+import  { tableCellClasses } from '@mui/material/TableCell';
+import { styled } from '@mui/material/styles';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import { visuallyHidden } from '@mui/utils';
+import Box from '@mui/material/Box';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -51,15 +60,10 @@ const ListTaxDeductDetail = () => {
   const dispathch = useDispatch();
   const history = useHistory();
 
-  console.log('1');
-
-  const [name, setName] = useState('');
   const [year, setYear] = useState('');
   const [oldYear, setOldYear] = useState('');
-  const [status, setStatus] = useState('active');
   const [checkedList, setCheckedList] = useState({});
   const [listYear, setListYear] = useState([]);
-  const [listDeduct, setListDeduct] = useState([]);
   const classes = useRowStyles();
   const [roleRightA, setRoleRightA] = useState(false);
   const [roleRightE, setRoleRightE] = useState(false);
@@ -89,75 +93,6 @@ const ListTaxDeductDetail = () => {
   const [active,setActive] = useState(false);
 
   const [dupEffective,setOpenModelDupEffective] = useState(false);
-  
-
-
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'right',
-    alignItems: 'right'
-  };
-
-  const styleSelect = {
-    paddingLeft: '35px',
-    width: '380px'
-  };
-
-  const styleButtonAdd = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    color: 'white',
-    background: '#007ac2',
-  };
-
-  const styleButtonsearch = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-
-  };
-  const styleButtonClear = {
-    float: 'right',
-    marginRight: '23px',
-    background: '#007ac2',
-    marginBottom: '20px',
-  };
-
-  const styleButtonEdit = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    background: '#007ac2',
-  };
-
-  const styleButtonExample = {
-    float: 'right',
-    marginRight: '23px',
-    marginBottom: '20px',
-    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-    boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-  };
-
-
-  const styleButtonDelete = {
-    float: 'left',
-    color: 'white',
-    background: '#ff1744',
-
-  };
-
-
-  const colStatus = {
-    marginLeft: '40px',
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
-
   function appendLeadingZeroes(n) {
     if (n <= 9) {
       return "0" + n;
@@ -216,7 +151,6 @@ const ListTaxDeductDetail = () => {
 
 
   const fetcDataDeduct = async () => {
-    setStatus('active');
     const { status, data } = await AuthenService.callApi("GET").get("/taxDeduct/listTaxDeduct");
 
     if (status === 200) {
@@ -322,11 +256,170 @@ const ListTaxDeductDetail = () => {
 
   }
 
-  const theme = createTheme({
-    palette: {
-      green: green,
+  //-------------------------------------- header table ------------------------------------------------------
+
+const headCells = [
+  {
+    id: 'taxDeductId',
+    numeric: false,
+    align: "center",
+    disablePadding: false,
+    label: 'รหัส',
+  },
+  {
+    id: 'name',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ชื่อ',
+  },
+  {
+    id: 'minAmt',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ต่ำสุดไม่น้อยกว่า (TH)',
+  },
+  {
+    id: 'maxAmt',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'สูงสุดไม่มากกว่า',
+  },
+  {
+    id: 'rate',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ไม่เกินร้อยละของเงินได้',
+  },
+  {
+    id: 'excess',
+    numeric: false,
+    disablePadding: false,
+    align: "center",
+    label: 'ส่วนที่ได้เกินจาก',
+  },
+  {
+    field: " ",
+    headerName: " ",
+    align: "center",
+    width: 100,
+  },
+  {
+    field: " ",
+    headerName: " ",
+    align: "center",
+    width: 100,
+  }
+];
+
+function EnhancedTableHead(props) {
+  const {  order, orderBy, numSelected, rowCount, onRequestSort } =
+    props;
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    <TableHead >
+      <TableRow >
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+             style={headTable}>
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+  const [selected, setSelected] = React.useState([]);
+  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState('taxDeductId');
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = listTaxDeductDetail.map((n) => n.name);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+  function descendingComparator(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function getComparator(order, orderBy) {
+    return order === 'desc'
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  }
+
+  // This method is created for cross-browser compatibility, if you don't
+  // need to support IE11, you can use Array.prototype.sort() directly
+  function stableSort(array, comparator) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) {
+        return order;
+      }
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+  }
+
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
     },
-  });
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
+
+//-----------------------------------------------------------------------------------------------------------------------------
 
   const addTaxDeduct = () => {
     history.push("/addTaxDeduct");
@@ -537,16 +630,16 @@ const ListTaxDeductDetail = () => {
                   </Dialog>
                 </div>
       <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>รายละเอียดกลุ่มลดหย่อนภาษี </tableRow></div>
-      <TableContainer className={classes.container} style={{ height: 600 }}>
+      {/* <TableContainer className={classes.container} style={{ height: 600 }}>
         <Table stickyHeader aria-label="sticky table">
-          <TableHead>
+          <TableHead> */}
             <TableRow>
               <TableCell align="right"><SelectCustom label="ปีภาษี :" value={year} listData={listYear}
                 onChange={(e) => {
                   handleChangeYear(e.target.value);
                 }} style={{ width: 180 }} /></TableCell>
               <TableCell>
-                <ThemeProvider theme={theme}>
+                <ThemeProvider>
                   <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAdd} onClick={() => handleClickOpen('add',taxDeductId)} disabled={!roleRightA}>
                     Add
                   </Button>
@@ -681,10 +774,10 @@ const ListTaxDeductDetail = () => {
                         </DialogContentText>
                       </DialogContent>
                       <DialogActions>
-                        <Button variant="contained" style={styleButtonDelete} onClick={() => deleteTaxDeduct(taxDeductId)}>
+                        <Button variant="contained" style={styleButtonCancel} onClick={() => deleteTaxDeduct(taxDeductId)}>
                           Delete
                         </Button>
-                        <Button variant="contained" color="secondary" style={styleButton} onClick={() => handleClose()}>
+                        <Button variant="contained" style={styleButtonCancel} onClick={() => handleClose()}>
                           Cancel
                         </Button>
                         <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxDeductDetail(year, taxDeductId, taxDeductName, taxMaxAmt, taxMinAmt, taxRate, taxExcess,action)}>
@@ -714,7 +807,17 @@ const ListTaxDeductDetail = () => {
                 </div>
               </TableCell>
             </TableRow>
-            <TableRow>
+            <TableContainer className={classes.container} style={{ height: 600 }}>
+        <Table style={{ border: '1px solid #D3D3D3' }} stickyHeader aria-label="sticky table" >
+          <EnhancedTableHead
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={listTaxDeductDetail.length}
+          />
+            {/* <TableRow>
               <TableCell style={{ width: 320, fontSize: 18 }}>
                 <p>รหัส</p>
               </TableCell>
@@ -740,9 +843,36 @@ const ListTaxDeductDetail = () => {
               <TableCell>
               </TableCell>
             </TableRow>
-          </TableHead>
+          </TableHead> */}
           <TableBody>
-            {listTaxDeductDetail.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((TaxDeductDetail, index) => {
+          {stableSort(listTaxDeductDetail, getComparator(order, orderBy))
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((TaxDeductDetail, index) => {
+                const labelId = `enhanced-table-checkbox-${index}`;
+                return (
+                  <StyledTableRow>
+                    <TableCell
+                      component="th"
+                      id={labelId}
+                      scope="row" style={front}>
+                      {TaxDeductDetail.taxDeductId}
+                    </TableCell>
+                  <TableCell>{TaxDeductDetail.name}</TableCell>
+                  <TableCell>{TaxDeductDetail.minAmt}</TableCell>
+                  <TableCell>{TaxDeductDetail.maxAmt}</TableCell>
+                  <TableCell>{TaxDeductDetail.rate}</TableCell>
+                  <TableCell>{TaxDeductDetail.excess}</TableCell>
+                  <TableCell>
+                    {roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => handleClickOpen('edit',TaxDeductDetail.taxDeductId)} disabled={!roleRightE}>
+                      Edit
+                    </Button>}</TableCell>
+                  <TableCell>
+                    {!roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxDeduct(TaxDeductDetail.taxDeductId)} disabled={!roleRightV}>
+                      View
+                    </Button>}</TableCell>
+                  </StyledTableRow>);
+              })}
+            {/* {listTaxDeductDetail.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((TaxDeductDetail, index) => {
               return (
                 <TableRow tabIndex={-1} key={TaxDeductDetail.taxDeductId}>
                   <TableCell>{TaxDeductDetail.taxDeductId}</TableCell>
@@ -767,9 +897,9 @@ const ListTaxDeductDetail = () => {
                         </TableCell>
                       );
                     })} */}
-                </TableRow>
+                {/* </TableRow>
               );
-            })}
+            })} */}
           </TableBody>
         </Table>
       </TableContainer>
@@ -824,7 +954,7 @@ const ListTaxDeductDetail = () => {
           </Container>
         </FormGroup>
         <div style={styleDivButton}>
-          <Button variant="contained" color="secondary" style={styleButton} onClick={() => handleClose()}>
+          <Button variant="contained" style={styleButtonCancel} onClick={() => handleClose()}>
             Cancel
           </Button>
           <Button variant="contained" color="primary" style={styleButton} onClick={() => findDataMoreCurrentDate(effectiveDate)}>

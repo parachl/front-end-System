@@ -26,6 +26,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import InputBase from '@material-ui/core/InputBase';
+import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 import { get } from 'lodash';
 
 const AddUserRole = () => {
@@ -40,18 +41,6 @@ const AddUserRole = () => {
   let roleName = 'select role';
   let rowsRole = [{}];
   let users = [];
-
-  const styleDivButton = {
-    width: '100%',
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -457,7 +446,7 @@ const clearSearch = () => {
         <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddUserRole()}>
           Submit
         </Button>
-        <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
+        <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
           Cancel
         </Button>
       </div>

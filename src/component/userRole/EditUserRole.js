@@ -28,6 +28,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import InputBase from '@material-ui/core/InputBase';
 import { get } from 'lodash';
+import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 
 const EditUserRole = () => {
   const dispathch = useDispatch();
@@ -41,19 +42,6 @@ const EditUserRole = () => {
   const [dataUserStore, setUserStore] = useState([]);
   let roleName = 'select role';
   let rowsRole = [{}];
-  
-
-  const styleDivButton = {
-    width: '100%',
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
 
   const fetcData = async () => {
     const { status, data } = await AuthenService.callApi("GET").get("/role/listRole");
@@ -499,7 +487,7 @@ const EditUserRole = () => {
         <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditUserRole()}>
           Submit
         </Button>
-        <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
+        <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
           Cancel
         </Button>
       </div>

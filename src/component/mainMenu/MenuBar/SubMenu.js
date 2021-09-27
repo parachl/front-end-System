@@ -1,5 +1,5 @@
 import React,{ useState } from 'react'
-import { Link } from 'react-router-dom';
+import { withRouter,Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { NavItem } from 'reactstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -53,7 +53,7 @@ const Submenu = ({ item }) => {
     return (
         <>
           <NavItem >
-              {item.listMenu && <SideBarLink onClick={item.listMenu && showSubnav} >
+              {item.listMenu && <SideBarLink to="#" onClick={item.listMenu && showSubnav} >
               <div>
                     <FontAwesomeIcon icon={list} className="mr-2" />
                     <SideBarLabel>{item.groupMenuName}</SideBarLabel>
@@ -90,4 +90,4 @@ const Submenu = ({ item }) => {
     )
 }
 
-export default Submenu;
+export default withRouter(Submenu);

@@ -37,7 +37,7 @@ import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 // import Row from './Rows';
 
 
-const AddTaxDeductGroup = () => {
+const AddTaxSystemInfo = () => {
   const useStyles = makeStyles((theme) => ({
     root: {
       '& > *': {
@@ -51,14 +51,13 @@ const AddTaxDeductGroup = () => {
   const dispathch = useDispatch();
   const history = useHistory();
 
-  const [deductGroupId, setDeductGroupId] = useState('');
+  const [systemId, setSystemId] = useState('');
   const [name, setName] = useState('');
   const [nameTh, setNameTh] = useState('');
   const [nameEn, setNameEn] = useState('');
   const [description, setDescription] = useState('');
   const [descriptionTh, setDescriptionTh] = useState('');
   const [descriptionEn, setDescriptionEn] = useState('');
-  const [amount, setAmount] = useState('');
   const [status, setStatus] = useState('active');
   const [effectiveDate, setEffectiveDate] = useState(new Date());
   const [createTime, setCreateTime] = useState(new Date());
@@ -67,7 +66,6 @@ const AddTaxDeductGroup = () => {
   const user = JSON.parse(localStorage.getItem('currentUser'));
 
   const classes = useStyles();
-
   const initPage = () => {
     console.log('3');
     dispathch(showSpinner());
@@ -75,7 +73,7 @@ const AddTaxDeductGroup = () => {
       dispathch(hideSpinner())
     }, 500);
 
-    const result = AuthenService.checkPermission('Tax Deduct Group', 'A');
+    const result = AuthenService.checkPermission('Tax Deduct', 'A');
 
     if (!result) {
       history.push("/main");
@@ -92,16 +90,16 @@ const AddTaxDeductGroup = () => {
 
   }, []);
 
-  const submitAddTaxDeductGroup = async (deductGroupId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate,amount) => {
-    const taxDeductGroupObj = { deductGroupId: deductGroupId, name: name, nameTh: nameTh, nameEn: nameEn, description: description, descriptionTh: descriptionTh, descriptionEn: descriptionEn, status: status, effectiveDate: effectiveDate,amount:amount };
-    if (taxDeductGroupObj.name === '' || taxDeductGroupObj.deductGroupId === '' || taxDeductGroupObj.effectiveDate === '' || taxDeductGroupObj.amount === '') {
+  const submitAddTaxSystemInfo = async (systemId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate) => {
+    const taxSystemInfoObj = { systemId: systemId, name: name, nameTh: nameTh, nameEn: nameEn, description: description, descriptionTh: descriptionTh, descriptionEn: descriptionEn, status: status, effectiveDate: effectiveDate };
+    if (taxSystemInfoObj.name === '' || taxSystemInfoObj.systemId === '' || taxSystemInfoObj.effectiveDate === '') {
       alert('Please fill in all required fields.');
     } else {
-      console.log('TaxDeductGroupObj', taxDeductGroupObj);
-      const { status, data } = await AuthenService.callApi("POST").post("/taxDeductGroup/addTaxDeductGroup", taxDeductGroupObj);
+      console.log('taxSystemInfoObj', taxSystemInfoObj);
+      const { status, data } = await AuthenService.callApi("POST").post("/taxSystemInfo/addTaxSystemInfo", taxSystemInfoObj);
       console.log('data', data);
       if (data === 'success') {
-        history.push("/listTaxDeductGroup");
+        history.push("/listTaxSystemInfo");
       } else if (data === 'duplicate') {
         console.log('data', data);
         alert('Data Duplicate');
@@ -110,7 +108,7 @@ const AddTaxDeductGroup = () => {
   }
 
   function cancel() {
-    history.push("/listTaxDeductGroup");
+    history.push("/listTaxSystemInfo");
   }
 
 
@@ -121,7 +119,7 @@ const AddTaxDeductGroup = () => {
           <TableHead>
             <TableRow>
               {/* <TableCell/> */}
-              <TableCell style={{ width: 180, fontSize: 32 }}>กลุ่มลดหย่อนภาษี </TableCell>
+              <TableCell style={{ width: 180, fontSize: 32 }}>รหัสระบบงาน </TableCell>
             </TableRow>
             <TableRow>
               <FormGroup style={{ width: 1080, padding: 15 }}>
@@ -129,8 +127,8 @@ const AddTaxDeductGroup = () => {
                   <Row >
                     <Col>
                       <Label className="form-group" sm={4}>รหัส</Label>
-                      <Input className="form-group" type="text" value={deductGroupId} onChange={(e) => {
-                        setDeductGroupId(e.target.value);
+                      <Input className="form-group" type="text" value={systemId} onChange={(e) => {
+                        setSystemId(e.target.value);
                       }} placeholder="with a placeholder" />
                     </Col>
                     <Col>
@@ -173,14 +171,6 @@ const AddTaxDeductGroup = () => {
                       <Label className="form-group" sm={4}>รายละเอียด (EN)</Label>
                       <Input className="form-group" type="textarea" value={descriptionEn} onChange={(e) => {
                         setDescriptionEn(e.target.value);
-                      }} placeholder="with a placeholder" />
-                    </Col>
-                  </Row>
-                  <Row >
-                    <Col sm={6}>
-                      <Label className="form-group" sm={4}>จำนวนเงินไม่เกิน</Label>
-                      <Input className="form-group"  type="text" value={amount} onChange={(e) => {
-                        setAmount(e.target.value);
                       }} placeholder="with a placeholder" />
                     </Col>
                   </Row>
@@ -231,7 +221,7 @@ const AddTaxDeductGroup = () => {
         </Table>
       </TableContainer>
       <div style={styleDivButton}>
-        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxDeductGroup(deductGroupId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate,amount)}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxSystemInfo(systemId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate)}>
           Submit
         </Button>
         <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
@@ -242,4 +232,4 @@ const AddTaxDeductGroup = () => {
   );
 }
 
-export default withRouter(AddTaxDeductGroup);
+export default withRouter(AddTaxSystemInfo);

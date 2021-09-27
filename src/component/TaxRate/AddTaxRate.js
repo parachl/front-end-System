@@ -33,6 +33,7 @@ import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SelectCustom } from '../reuse/SelectCustom';
+import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 // import Row from './Rows';
 
 
@@ -65,18 +66,6 @@ const AddTaxRate = () => {
   const user = JSON.parse(localStorage.getItem('currentUser'));
 
   const classes = useStyles();
-
-  let listRoleMenuAdd = [];
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
   const initPage = () => {
     console.log('3');
     dispathch(showSpinner());
@@ -235,7 +224,7 @@ const AddTaxRate = () => {
         <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxRate(taxRateId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate)}>
           Submit
         </Button>
-        <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
+        <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
           Cancel
         </Button>
       </div>

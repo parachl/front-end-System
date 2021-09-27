@@ -3,11 +3,10 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory, withRouter } from 'react-router-dom';
+import { useHistory,withRouter,useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
-import { FormGroup, Label, Row, Col, Form, Input, Container } from 'reactstrap';
-import FormControl from '@material-ui/core/FormControl';
+import { FormGroup, Label, Row, Col,Form,Input,Container } from 'reactstrap';
 import api from "../../api/GetApi";
 import { get } from 'lodash';
 
@@ -31,13 +30,13 @@ import { InputLabelReuse } from '../reuse/InputLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { SelectCustom } from '../reuse/SelectCustom';
+import FormControl from '@material-ui/core/FormControl';
 import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 // import Row from './Rows';
 
 
-const AddTaxDeductGroup = () => {
+const EditTaxSystemInfo = () => {
   const useStyles = makeStyles((theme) => ({
     root: {
       '& > *': {
@@ -51,57 +50,85 @@ const AddTaxDeductGroup = () => {
   const dispathch = useDispatch();
   const history = useHistory();
 
-  const [deductGroupId, setDeductGroupId] = useState('');
+  const [systemId, setSystemId] = useState('');
   const [name, setName] = useState('');
   const [nameTh, setNameTh] = useState('');
   const [nameEn, setNameEn] = useState('');
   const [description, setDescription] = useState('');
   const [descriptionTh, setDescriptionTh] = useState('');
   const [descriptionEn, setDescriptionEn] = useState('');
-  const [amount, setAmount] = useState('');
   const [status, setStatus] = useState('active');
   const [effectiveDate, setEffectiveDate] = useState(new Date());
   const [createTime, setCreateTime] = useState(new Date());
+  const [createUser, setCreateUser] = useState('');
+  const [updateTime, setUpdateTime] = useState(new Date());
   const [updateUser, setUpdateUser] = useState('');
+  const location = useLocation();
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
   const user = JSON.parse(localStorage.getItem('currentUser'));
 
   const classes = useStyles();
-
-  const initPage = () => {
-    console.log('3');
+ 
+  const initPage = (systemId) => {
     dispathch(showSpinner());
     setTimeout(function () {
       dispathch(hideSpinner())
     }, 500);
 
-    const result = AuthenService.checkPermission('Tax Deduct Group', 'A');
+    const result = AuthenService.checkPermission('Tax Deduct', 'E');
 
     if (!result) {
       history.push("/main");
     }
+    fetcData(systemId);
+  }
+
+  const fetcData = async (systemId) => {
+    console.log('fetcData systemId > ', systemId);
+    const { status, data } = await AuthenService.callApi("GET").get("/taxSystemInfo/findById?systemId="+ systemId);
+
+    if (status === 200) {
+      console.log('fetcData systemId data > ', data);
+      setSystemId(data.systemId);
+      setName(data.name);
+      setNameTh(data.nameTh);
+      setNameEn(data.nameEn);
+      setDescription(data.description);
+      setDescriptionTh(data.descriptionTh);
+      setDescriptionEn(data.descriptionEn);
+      setStatus(data.status);
+      setEffectiveDate(new Date(data.effectiveDate));
+      setCreateTime(data.createTime);
+      setCreateUser(data.createUser);
+      if(data.updateTime !== null){
+        setUpdateTime(new Date(data.updateTime));
+      }
+      setUpdateUser(data.updateUser);
+    } else {
+      alert('error');
+    }
 
   }
+
+  useEffect(() => {
+    initPage(location.state.systemId);
+
+  }, []);
 
   const handleChangeStatus = (event) => {
     setStatus(event);
   };
 
-  useEffect(() => {
-    initPage();
-
-  }, []);
-
-  const submitAddTaxDeductGroup = async (deductGroupId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate,amount) => {
-    const taxDeductGroupObj = { deductGroupId: deductGroupId, name: name, nameTh: nameTh, nameEn: nameEn, description: description, descriptionTh: descriptionTh, descriptionEn: descriptionEn, status: status, effectiveDate: effectiveDate,amount:amount };
-    if (taxDeductGroupObj.name === '' || taxDeductGroupObj.deductGroupId === '' || taxDeductGroupObj.effectiveDate === '' || taxDeductGroupObj.amount === '') {
+  const submitEditTaxSystemInfo = async (systemId, name,nameTh,nameEn,description,descriptionTh,descriptionEn,status,effectiveDate) => {
+    const taxSystemInfoObj = { systemId:location.state.systemId, name: name,nameTh:nameTh,nameEn:nameEn,description:description,descriptionTh:descriptionTh,descriptionEn:descriptionEn,status:status,effectiveDate:effectiveDate,createUser:createUser,createTime:createTime };
+    if (taxSystemInfoObj.name === '' || taxSystemInfoObj.systemId === ''|| taxSystemInfoObj.effectiveDate === '') {
       alert('Please fill in all required fields.');
-    } else {
-      console.log('TaxDeductGroupObj', taxDeductGroupObj);
-      const { status, data } = await AuthenService.callApi("POST").post("/taxDeductGroup/addTaxDeductGroup", taxDeductGroupObj);
+    }else{
+      console.log('taxSystemInfoObj', taxSystemInfoObj);
+      const { status, data } = await AuthenService.callApi("POST").post("/taxSystemInfo/editTaxSystemInfo",taxSystemInfoObj);
       console.log('data', data);
       if (data === 'success') {
-        history.push("/listTaxDeductGroup");
+        history.push("/listTaxSystemInfo");
       } else if (data === 'duplicate') {
         console.log('data', data);
         alert('Data Duplicate');
@@ -110,9 +137,8 @@ const AddTaxDeductGroup = () => {
   }
 
   function cancel() {
-    history.push("/listTaxDeductGroup");
+    history.push("/listTaxSystemInfo");
   }
-
 
   return (
     <PageBox>
@@ -121,7 +147,7 @@ const AddTaxDeductGroup = () => {
           <TableHead>
             <TableRow>
               {/* <TableCell/> */}
-              <TableCell style={{ width: 180, fontSize: 32 }}>กลุ่มลดหย่อนภาษี </TableCell>
+              <TableCell style={{ width: 180, fontSize: 32 }}>รหัสระบบงาน </TableCell>
             </TableRow>
             <TableRow>
               <FormGroup style={{ width: 1080, padding: 15 }}>
@@ -129,8 +155,8 @@ const AddTaxDeductGroup = () => {
                   <Row >
                     <Col>
                       <Label className="form-group" sm={4}>รหัส</Label>
-                      <Input className="form-group" type="text" value={deductGroupId} onChange={(e) => {
-                        setDeductGroupId(e.target.value);
+                      <Input className="form-group" type="text" value={systemId} onChange={(e) => {
+                        setSystemId(e.target.value);
                       }} placeholder="with a placeholder" />
                     </Col>
                     <Col>
@@ -177,14 +203,6 @@ const AddTaxDeductGroup = () => {
                     </Col>
                   </Row>
                   <Row >
-                    <Col sm={6}>
-                      <Label className="form-group" sm={4}>จำนวนเงินไม่เกิน</Label>
-                      <Input className="form-group"  type="text" value={amount} onChange={(e) => {
-                        setAmount(e.target.value);
-                      }} placeholder="with a placeholder" />
-                    </Col>
-                  </Row>
-                  <Row >
                     <Col>
                       <SelectCustom label="สถานะ :" value={status} listData={listStatus}
                         onChange={(e) => {
@@ -205,20 +223,20 @@ const AddTaxDeductGroup = () => {
                   <Row >
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={4}>ผู้สร้าง  :</Label>
+                        <Label className="form-group" sm={4}>ผู้อัปเดตล่าสุด  :</Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
-                            <Label className="form-group" sm={4}>{user.name}</Label>
+                            <Label className="form-group" sm={4}>{updateUser}</Label>
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={4}>วันที่สร้างล่าสุด  :</Label>
+                        <Label className="form-group" sm={4}>วันที่อัปเดตล่าสุด  :</Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
-                            <DatePicker selected={createTime} onChange={(date) => setCreateTime(date)} disabled />
+                            <DatePicker selected={updateTime} onChange={(date) => setUpdateTime(date)} disabled />
                           </FormControl>
                         </Col>
                       </FormGroup>
@@ -231,7 +249,7 @@ const AddTaxDeductGroup = () => {
         </Table>
       </TableContainer>
       <div style={styleDivButton}>
-        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxDeductGroup(deductGroupId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate,amount)}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditTaxSystemInfo(systemId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate)}>
           Submit
         </Button>
         <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
@@ -242,4 +260,4 @@ const AddTaxDeductGroup = () => {
   );
 }
 
-export default withRouter(AddTaxDeductGroup);
+export default withRouter(EditTaxSystemInfo);

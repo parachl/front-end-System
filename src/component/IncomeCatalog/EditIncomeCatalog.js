@@ -18,6 +18,7 @@ import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
 import { SelectCustom } from '../reuse/SelectCustom';
 import FormControl from '@material-ui/core/FormControl';
+import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 // import Row from './Rows';
 
 
@@ -57,19 +58,6 @@ const EditIncomeCatalog = () => {
   const handleChangeStatus = (event) => {
     setStatus(event);
   };
-
-  let listRoleMenuAdd = [];
-  const styleDivButton = {
-    padding: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  };
-
-  const styleButton = {
-    margin: '10px',
-  };
-
  
   const initPage = (incomeCatalogId) => {
     dispathch(showSpinner());
@@ -286,7 +274,7 @@ const EditIncomeCatalog = () => {
         <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditTaxIncome(incomeCatalogId, name,nameTh,nameEn,description,descriptionTh,descriptionEn,taxCatalog,taxRate,status,effectiveDate)}>
           Submit
         </Button>
-        <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
+        <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
           Cancel
         </Button>
       </div>
