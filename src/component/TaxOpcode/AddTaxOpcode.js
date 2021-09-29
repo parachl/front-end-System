@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, withRouter } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
-import { FormGroup, Label, Row, Col, Form, Input, Container } from 'reactstrap';
+import { FormGroup, Label, Row, Col, Form, Input, Container,FormFeedback } from 'reactstrap';
 import FormControl from '@material-ui/core/FormControl';
 import api from "../../api/GetApi";
 import { get } from 'lodash';
@@ -35,9 +35,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SelectCustom } from '../reuse/SelectCustom';
 import Switch from '@mui/material/Switch';
 
-import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
+import {styleDivButton,styleButton,styleButtonCancel,required} from '../../themes/style';
 // import Row from './Rows';
-
+import { store } from "react-notifications-component";
+import Swal from "sweetalert2";
 
 const AddTaxOpcode = () => {
   const useStyles = makeStyles((theme) => ({
@@ -73,6 +74,7 @@ const AddTaxOpcode = () => {
   const [createTime, setCreateTime] = useState(new Date());
   const [updateUser, setUpdateUser] = useState('');
   const [listTaxIncome, setListTaxIncome] = useState([]);
+  const [submit, setSubmit] = useState(false);
 
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
   let listGroup = [{ show: 'payroll', value: 'payroll' }, { show: 'commission', value: 'commission' }];
@@ -112,7 +114,10 @@ const AddTaxOpcode = () => {
         setIncomeCatalogId(rowsTaxIncome[0].value);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
   }
 
@@ -127,17 +132,27 @@ const AddTaxOpcode = () => {
 
   const submitAddTaxOpcode = async (opcode, name, nameTh, nameEn, groupType, opcodeType, netType, incomeCatalogId, minRate, maxRate, minBaht, maxBaht, calSoc, calTax, status, effectiveDate) => {
     const taxOpcodeObj = { opcode: opcode, name: name, nameTh: nameTh, nameEn: nameEn, groupType: groupType, opcodeType: opcodeType, netType: netType, incomeCatalogId: incomeCatalogId, minRate: minRate, maxRate: maxRate, minBaht: minBaht, maxBaht: maxBaht, calSoc: calSoc, calTax: calTax, status: status, effectiveDate: effectiveDate };
+    setSubmit(true);
     if (taxOpcodeObj.name === '' || taxOpcodeObj.opCode === '' || taxOpcodeObj.effectiveDate === '') {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     } else {
       console.log('taxOpcodeObj', taxOpcodeObj);
       const { status, data } = await AuthenService.callApi("POST").post("/taxOpcode/addTaxOpcode", taxOpcodeObj);
       console.log('data', data);
       if (data === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'บันทึกสำเร็จ',
+        });
         history.push("/listOpcode");
       } else if (data === 'duplicate') {
-        console.log('data', data);
-        alert('Data Duplicate');
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้้ำ',
+        });
       }
     }
   }
@@ -159,27 +174,29 @@ const AddTaxOpcode = () => {
             <TableRow>
               <FormGroup style={{ width: 1080, padding: 15 }}>
                 <Container>
-                  <Row>
+                <Row>
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={4}>รหัส</Label>
+                        <Label className="form-group" sm={4}>รหัส<label style={required}>{"*"}</label></Label>
                         <Col sm={5}>
                           <FormControl className={classes.formControl}>
                             <Input className="form-group" type="text" value={opcode} onChange={(e) => {
                               setOpCode(e.target.value);
-                            }} placeholder="with a placeholder" />
+                            }} placeholder="with a placeholder" invalid={opcode === "" && submit} />
+                            <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>ชื่อ</Label>
+                      <Label className="form-group" sm={4}>ชื่อ<label style={required}>{"*"}</label></Label>
                         <Col sm={5}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={name} onChange={(e) => {
                         setName(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" invalid={name === "" && submit} />
+                      <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
@@ -216,7 +233,7 @@ const AddTaxOpcode = () => {
                       <SelectCustom label="Group :" value={groupType} listData={listGroup}
                         onChange={(e) => {
                           setGroupType(e.target.value);
-                        }} style={{ width: 180 }} />
+                        }} style={{ width: 180 }} requiredField={true} invalid={groupType === "" && submit} />
                     </Col>
                     <Col></Col>
                   </Row>
@@ -225,19 +242,19 @@ const AddTaxOpcode = () => {
                       <SelectCustom label="Opcode Type :" value={opcodeType} listData={listOpcode}
                         onChange={(e) => {
                           setOpcodeType(e.target.value);
-                        }} style={{ width: 180 }} />
+                        }} style={{ width: 180 }} requiredField={true} invalid={opcodeType === "" && submit} />
                     </Col>
                     <Col>
                       <SelectCustom label="Net Type :" value={netType} listData={listNetType}
                         onChange={(e) => {
                           setNetType(e.target.value);
-                        }} style={{ width: 180 }} />
+                        }} style={{ width: 180 }} requiredField={true} invalid={netType === "" && submit} />
                     </Col>
                   </Row>
                   <Row >
                   <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>คำนวณประกันสังคม</Label>
+                      <Label className="form-group" sm={4}>คำนวณประกันสังคม<label style={required}>{"*"}</label></Label>
                         <Col sm={5}>
                           <FormControl className={classes.formControl}>
                           <Switch
@@ -253,7 +270,7 @@ const AddTaxOpcode = () => {
                     </Col>
                     <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>คำนวณภาษี</Label>
+                      <Label className="form-group" sm={4}>คำนวณภาษี<label style={required}>{"*"}</label></Label>
                         <Col sm={5}>
                           <FormControl className={classes.formControl}>
                           <Switch
@@ -273,31 +290,33 @@ const AddTaxOpcode = () => {
                       <SelectCustom label="Tax Type :" value={incomeCatalogId} listData={listTaxIncome}
                         onChange={(e) => {
                           setIncomeCatalogId(e.target.value);
-                        }} style={{ width: 180 }} />
+                        }} style={{ width: 180 }} requiredField={true} invalid={incomeCatalogId === "" && submit}  />
                     </Col>
                     <Col></Col>
                   </Row>
                   <Row >
                   <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>MIN (%)</Label>
+                      <Label className="form-group" sm={4}>MIN (%)<label style={required}>{"*"}</label></Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={minRate} onChange={(e) => {
                         setMinRate(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" invalid={minRate === "" && submit}  />
+                      <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>MAX (%)</Label>
+                      <Label className="form-group" sm={4}>MAX (%)<label style={required}>{"*"}</label></Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={maxRate} onChange={(e) => {
                         setMaxRate(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" invalid={maxRate === "" && submit} />
+                      <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
@@ -306,24 +325,26 @@ const AddTaxOpcode = () => {
                   <Row >
                   <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>MIN (บาท)</Label>
+                      <Label className="form-group" sm={4}>MIN (บาท)<label style={required}>{"*"}</label></Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={minBaht} onChange={(e) => {
                         setMinBaht(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" invalid={minBaht === "" && submit} />
+                      <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>MAX (บาท)</Label>
+                      <Label className="form-group" sm={4}>MAX (บาท)<label style={required}>{"*"}</label></Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={maxBaht} onChange={(e) => {
                         setMaxBaht(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" invalid={maxBaht === "" && submit}  />
+                      <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
@@ -332,7 +353,7 @@ const AddTaxOpcode = () => {
                   <Row >
                   <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>ใบสำคัญ</Label>
+                      <Label className="form-group" sm={4}>ใบสำคัญ<label style={required}>{"*"}</label></Label>
                         <Col sm={5}>
                           <FormControl className={classes.formControl}>
                           <Switch
@@ -357,10 +378,11 @@ const AddTaxOpcode = () => {
                     </Col>
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={4}>วันที่มีผล  :</Label>
+                        <Label className="form-group" sm={4}>วันที่มีผล<label style={required}>{"*"}</label></Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
-                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} />
+                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} invalid={effectiveDate === "" && submit} />
+                            <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>

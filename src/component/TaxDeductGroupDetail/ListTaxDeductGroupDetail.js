@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, withRouter } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
@@ -29,9 +29,9 @@ import Slide from '@material-ui/core/Slide';
 import { FormGroup, Label, Col, Row, Form, Input, Container } from 'reactstrap';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
-import {styleButtonAddMargin40,styleDivButton,styleButton,styleButtonEdit,styleButtonDelete,styleSelect,styleButtonCancel,front, headTable} from '../../themes/style';
+import { styleButtonAddMargin40, styleDivButton, styleButton, styleButtonEdit, styleButtonDelete, styleSelect, styleButtonCancel, front, headTable } from '../../themes/style';
 
-import  { tableCellClasses } from '@mui/material/TableCell';
+import { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
@@ -39,7 +39,12 @@ import Box from '@mui/material/Box';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
+import './ListTaxDeductGroupDetail.css';
+
+import { store } from "react-notifications-component";
+import Swal from "sweetalert2";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -151,7 +156,10 @@ const ListTaxDeduct = () => {
         setUpdateUser(user.name);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
   }
 
@@ -176,7 +184,10 @@ const ListTaxDeduct = () => {
         setListTaxDeduct(rowsTaxDeduct);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
   }
 
@@ -201,7 +212,10 @@ const ListTaxDeduct = () => {
         setListTaxDeductGroup(rowsTaxDeductGroup);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
     console.log("fetcData data 1", data);
   }
@@ -320,25 +334,34 @@ const ListTaxDeduct = () => {
     },
   });
 
-  const submitAddTaxDeductDetail = (year, taxDeductId, taxDeductName,taxDeductGroupName, deductGroupId, no, action,indexClick,effectiveDate) => {
-    console.log("submitAddTaxDeductDetail listTaxDeductGroupDetail", listTaxDeductGroupDetail);
-    const taxDeductDetailObj = { year: year, taxDeductId: taxDeductId,taxDeductGroupName:taxDeductGroupName, name: taxDeductName,effectiveDate:effectiveDate, deductGroupId: deductGroupId, no: no };
+  const submitAddTaxDeductDetail = (year, taxDeductId, taxDeductName, taxDeductGroupName, deductGroupId, no, action, indexClick, effectiveDate) => {
+    console.log("submitAddTaxDeductDetail listTaxDeductGroupDetail", no);
+    const taxDeductDetailObj = { year: year, taxDeductId: taxDeductId, taxDeductGroupName: taxDeductGroupName, name: taxDeductName, effectiveDate: effectiveDate, deductGroupId: deductGroupId, no: no };
     if (action === 'add') {
       if (taxDeductDetailObj.year === '' || taxDeductDetailObj.taxDeductId === '' || taxDeductDetailObj.name === '' || taxDeductDetailObj.deductGroupId === '' || taxDeductDetailObj.no === '') {
-
-        alert('Please fill in all required fields.');
+        Swal.fire({
+          icon: 'warning',
+          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        });
       } else {
         var index = listTaxDeductGroupDetail.findIndex((x) => x.taxDeductId === taxDeductDetailObj.taxDeductId);
         if (index !== -1) {
-          alert('Duplication Deduct.');
+          Swal.fire({
+            icon: 'warning',
+            title: 'ข้อมูลซ้้ำ',
+          });
         } else {
           setListTaxDeductGroupDetail([...listTaxDeductGroupDetail.slice(0, listTaxDeductGroupDetail.length), taxDeductDetailObj]);
           setTaxDeductId(listTaxDeduct[0].taxDeductId);
+          setOpen(false);
         }
       }
     } else {
       if (taxDeductDetailObj.year === '' || taxDeductDetailObj.taxDeductId === '' || taxDeductDetailObj.name === '' || taxDeductDetailObj.deductGroupId === '' || taxDeductDetailObj.no === '') {
-        alert('Please fill in all required fields.');
+        Swal.fire({
+          icon: 'warning',
+          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        });
       } else {
         var index = listTaxDeductGroupDetail.findIndex((x) => x.taxDeductId === taxDeductId);
         if (index !== -1 && indexClick === index) {
@@ -349,15 +372,19 @@ const ListTaxDeduct = () => {
           setTaxDeductName('');
           setNo('');
           setTaxDeductId(listTaxDeduct[0].taxDeductId);
-        }else{
-          alert('Duplication Deduct.');
+          setOpen(false);
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'ข้อมูลซ้้ำ',
+          });
         }
 
       }
     }
 
     setActive(true);
-    setOpen(false);
+
   }
 
   const findDataMoreCurrentDate = async (effectiveDate) => {
@@ -373,7 +400,10 @@ const ListTaxDeduct = () => {
         handleOpenMessageDupEffective();
       }
     } else {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     }
   }
 
@@ -384,7 +414,7 @@ const ListTaxDeduct = () => {
       let listTaxDeductGroupDetailObj = [];
       let taxDeductDetailObjC = {};
       for (let j = 0; j < listTaxDeductGroupDetail.length; j++) {
-        const taxDeductDetailObj = { year: listTaxDeductGroupDetail[j].year, taxDeductId: listTaxDeductGroupDetail[j].taxDeductId,no: listTaxDeductGroupDetail[j].no, deductGroupId: listTaxDeductGroupDetail[j].deductGroupId , effectiveDate: effectiveDate };
+        const taxDeductDetailObj = { year: listTaxDeductGroupDetail[j].year, taxDeductId: listTaxDeductGroupDetail[j].taxDeductId, no: j, deductGroupId: listTaxDeductGroupDetail[j].deductGroupId, effectiveDate: effectiveDate };
         listTaxDeductGroupDetailObj.push(taxDeductDetailObj);
       }
       taxDeductDetailObjC = { listTaxDeductGroupDetailObj };
@@ -394,13 +424,21 @@ const ListTaxDeduct = () => {
       console.log('data', data);
       if (data === 'success') {
         fetcData(year, deductGroupId);
-        alert('Success');
+        Swal.fire({
+          icon: 'success',
+          title: 'บันทึกสำเร็จ',
+        });
       } else if (data === 'duplicate') {
-        console.log('data', data);
-        alert('Data Duplicate');
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้้ำ',
+        });
       }
     } else {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     }
     handleMessageDupEffectiveClose();
   }
@@ -418,6 +456,14 @@ const ListTaxDeduct = () => {
     console.log('index delete >>', index);
     if (index !== -1) {
       let g = listTaxDeductGroupDetail[index];
+       let list = [...listTaxDeductGroupDetail.slice(0, index), ...listTaxDeductGroupDetail.slice(index + 1, 1), ...listTaxDeductGroupDetail.slice(index + 1)];
+       console.log('list delete 1 >>', list);
+       for(var v = 0 ; v < list.length ; v++){
+         let object = list[v];
+         object.no = v;
+         list[v] = object;
+       }
+       console.log('list delete 2 >>', list);
       setListTaxDeductGroupDetail([...listTaxDeductGroupDetail.slice(0, index), ...listTaxDeductGroupDetail.slice(index + 1, 1), ...listTaxDeductGroupDetail.slice(index + 1)]);
     }
     setOpen(false);
@@ -437,16 +483,19 @@ const ListTaxDeduct = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  
+
 
   const [open, setOpen] = React.useState(false);
   const [openModelYaer, setOpenModelYaer] = React.useState(false);
 
 
-  const handleClickOpen = (action, taxDeductId,indexClick) => {
+  const handleClickOpen = (action, taxDeductId, indexClick) => {
     console.log('handleClickOpen taxDeductId >>', taxDeductId);
     if (deductGroupId === '') {
-      alert('กรุณาเลือกกลุ่มลดหย่อนก่อน');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณาเลือกกลุ่มลดหย่อนก่อน',
+      });
     } else {
       setOpen(true);
       setAction(action);
@@ -459,14 +508,14 @@ const ListTaxDeduct = () => {
         }
         var index = listTaxDeductGroup.findIndex((x) => x.deductGroupId === deductGroupId);
         console.log('handleClickOpen index 2>>', index);
-      if (index !== -1) {
-        let g = listTaxDeductGroup[index];
-        setTaxDeductGroupName(g.name);
-      }
+        if (index !== -1) {
+          let g = listTaxDeductGroup[index];
+          setTaxDeductGroupName(g.name);
+        }
         if (listTaxDeductGroupDetail.length === 0) {
           setNo(1);
-        }else{
-          setNo(listTaxDeductGroupDetail.length+1);
+        } else {
+          setNo(listTaxDeductGroupDetail.length + 1);
         }
       } else {
         setIndexClick(indexClick);
@@ -478,7 +527,7 @@ const ListTaxDeduct = () => {
           setTaxDeductId(g.taxDeductId);
           setTaxDeductName(g.name);
           setDeductGroupId(g.deductGroupId);
-          setNo(g.no);
+          setNo(indexClick + 1);
           var index = listTaxDeductGroup.findIndex((x) => x.deductGroupId === g.deductGroupId);
           if (index !== -1) {
             let g = listTaxDeductGroup[index];
@@ -514,73 +563,73 @@ const ListTaxDeduct = () => {
     setTaxDeductName('');
   };
 
-  
+
   //-------------------------------------- header table ------------------------------------------------------
 
-const headCells = [
-  {
-    id: 'taxDeductId',
-    numeric: false,
-    align: "center",
-    disablePadding: false,
-    label: 'ลำดับที่',
-  },
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: false,
-    align: "center",
-    label: 'รายการลดหย่อน',
-  },
-  {
-    field: " ",
-    headerName: " ",
-    align: "center",
-    width: 100,
-  },
-  {
-    field: " ",
-    headerName: " ",
-    align: "center",
-    width: 100,
+  const headCells = [
+    {
+      id: 'taxDeductId',
+      numeric: false,
+      align: "center",
+      disablePadding: false,
+      label: 'ลำดับที่',
+    },
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: false,
+      align: "center",
+      label: 'รายการลดหย่อน',
+    },
+    {
+      field: " ",
+      headerName: " ",
+      align: "center",
+      width: 100,
+    },
+    {
+      field: " ",
+      headerName: " ",
+      align: "center",
+      width: 100,
+    }
+  ];
+
+  function EnhancedTableHead(props) {
+    const { order, orderBy, numSelected, rowCount, onRequestSort } =
+      props;
+    const createSortHandler = (property) => (event) => {
+      onRequestSort(event, property);
+    };
+
+    return (
+      <TableHead >
+        <TableRow >
+          {headCells.map((headCell) => (
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? 'right' : 'left'}
+              padding={headCell.disablePadding ? 'none' : 'normal'}
+              sortDirection={orderBy === headCell.id ? order : false}
+              style={headTable}>
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <Box component="span" sx={visuallyHidden}>
+                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  </Box>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+    );
   }
-];
-
-function EnhancedTableHead(props) {
-  const {  order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead >
-      <TableRow >
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
-             style={headTable}>
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
 
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState('asc');
@@ -650,7 +699,7 @@ function EnhancedTableHead(props) {
     },
   }));
 
-//-----------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------
 
   return (
     <PageBox style={{ marginBotton: 50 }}>
@@ -675,148 +724,149 @@ function EnhancedTableHead(props) {
       <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>ตารางลดหย่อนภาษี </tableRow></div>
       {/* <TableContainer className={classes.container} style={{ height: 600 }}>
         <Table stickyHeader aria-label="sticky table"> */}
-          {/* <TableHead> */}
-            <TableRow>
-              <TableCell align="right"><SelectCustom label="ปีภาษี :" value={year} listData={listYear}
-                onChange={(e) => {
-                  handleChangeYear(e.target.value, deductGroupId);
-                }} style={{ width: 180 }} /></TableCell>
-              <TableCell>
-                <ThemeProvider theme={theme}>
-                  <div>
-                    <Dialog
-                      open={open}
-                      TransitionComponent={Transition}
-                      maxWidth="xl"
-                      keepMounted
-                      onClose={handleClose}
-                      aria-labelledby="alert-dialog-slide-title"
-                      aria-describedby="alert-dialog-slide-description"
-                    >
-                      <DialogTitle id="alert-dialog-slide-title">{"เพิ่มรายการลดหย่อน"}</DialogTitle>
-                      <DialogContent>
-                        <DialogContentText id="alert-dialog-slide-description">
-                          <TableRow>
-                            <FormGroup style={{ width: 1080, padding: 15 }}>
-                              <Container>
-                                <Row >
-                                  <Col>
+      {/* <TableHead> */}
+      <TableRow>
+        <TableCell align="right"><SelectCustom label="ปีภาษี :" value={year} listData={listYear}
+          onChange={(e) => {
+            handleChangeYear(e.target.value, deductGroupId);
+          }} style={{ width: 180 }} /></TableCell>
+        <TableCell>
+          <ThemeProvider theme={theme}>
+            <div>
+              <Dialog
+                open={open}
+                TransitionComponent={Transition}
+                maxWidth="xl"
+                keepMounted
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-slide-title"
+                aria-describedby="alert-dialog-slide-description"
+                disableEscapeKeyDown={false}
+              >
+                <DialogTitle id="alert-dialog-slide-title">{"เพิ่มรายการลดหย่อน"}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-slide-description">
+                    <TableRow>
+                      <FormGroup style={{ width: 1080, padding: 15 }}>
+                        <Container>
+                          <Row >
+                            <Col>
+                              <FormGroup row>
+                                <Label className="form-group" sm={2}>ปีภาษี :</Label>
+                                <Col sm={5}>
+                                  <FormControl className={classes.formControl}>
+                                    <Label className="form-group">{year}</Label>
+                                  </FormControl>
+                                </Col>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row >
+                            <Col>
+                              <FormGroup row>
+                                <Label className="form-group" sm={2}>กลุ่มลดหย่อน :</Label>
+                                <Col sm={5}>
+                                  <FormControl className={classes.formControl}>
+                                    <Label className="form-group">{taxDeductGroupName}</Label>
+                                  </FormControl>
+                                </Col>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col sm={6}></Col>
+                          </Row>
+                          <Row >
+                            <Col>
+                              <FormGroup row>
+                                <Label className="form-group" sm={4}>ลำดับ :</Label>
+                                <Col sm={5}>
+                                  <FormControl className={classes.formControl}>
+                                    <Input className="form-group" type="text" value={no} onChange={(e) => {
+                                      setNo(e.target.value);
+                                    }} placeholder="with a placeholder" disabled />
+                                  </FormControl>
+                                </Col>
+                              </FormGroup>
+                            </Col>
+                            <Col>
+                              <FormGroup row>
+                                <Label className="form-group" sm={5}>รายการลดหย่อน :</Label>
+                                <Col sm={5} style={styleSelect}>
+                                  <Form style={{ width: 280 }}>
                                     <FormGroup row>
-                                      <Label className="form-group" sm={2}>ปีภาษี :</Label>
-                                      <Col sm={5}>
-                                        <FormControl className={classes.formControl}>
-                                          <Label className="form-group">{year}</Label>
-                                        </FormControl>
-                                      </Col>
+                                      <FormControl className={classes.formControl}>
+                                        <NativeSelect
+                                          value={taxDeductId}
+                                          onChange={(e) => {
+                                            handleChangeDeduct(e.target.value);
+                                          }}
+                                          inputProps={{
+                                            name: 'deduct',
+                                            id: 'deduct-native-helper',
+                                          }}
+                                          style={{ width: 280 }}>
+                                          {listTaxDeduct !== null && listTaxDeduct.map((data, index) => (
+                                            <option value={data.value}>{data.show}</option>
+                                          ))}
+                                        </NativeSelect>
+                                      </FormControl>
                                     </FormGroup>
-                                  </Col>
-                                </Row>
-                                <Row >
-                                  <Col>
-                                    <FormGroup row>
-                                      <Label className="form-group" sm={2}>กลุ่มลดหย่อน :</Label>
-                                      <Col sm={5}>
-                                        <FormControl className={classes.formControl}>
-                                          <Label className="form-group">{taxDeductGroupName}</Label>
-                                        </FormControl>
-                                      </Col>
-                                    </FormGroup>
-                                  </Col>
-                                </Row>
-                                <Row>
-                                  <Col sm={6}></Col>
-                                </Row>
-                                <Row >
-                                  <Col>
-                                    <FormGroup row>
-                                      <Label className="form-group" sm={4}>ลำดับ :</Label>
-                                      <Col sm={5}>
-                                        <FormControl className={classes.formControl}>
-                                          <Input className="form-group" type="text" value={no} onChange={(e) => {
-                                            setNo(e.target.value);
-                                          }} placeholder="with a placeholder" disabled />
-                                        </FormControl>
-                                      </Col>
-                                    </FormGroup>
-                                  </Col>
-                                  <Col>
-                                    <FormGroup row>
-                                      <Label className="form-group" sm={5}>รายการลดหย่อน :</Label>
-                                      <Col sm={5} style={styleSelect}>
-                                        <Form style={{ width: 280 }}>
-                                          <FormGroup row>
-                                            <FormControl className={classes.formControl}>
-                                              <NativeSelect
-                                                value={taxDeductId}
-                                                onChange={(e) => {
-                                                  handleChangeDeduct(e.target.value);
-                                                }}
-                                                inputProps={{
-                                                  name: 'deduct',
-                                                  id: 'deduct-native-helper',
-                                                }}
-                                                style={{ width: 280 }}>
-                                                {listTaxDeduct !== null && listTaxDeduct.map((data, index) => (
-                                                  <option value={data.value}>{data.show}</option>
-                                                ))}
-                                              </NativeSelect>
-                                            </FormControl>
-                                          </FormGroup>
-                                        </Form>
-                                      </Col>
-                                    </FormGroup>
-                                  </Col>
-                  
-                                </Row>
-                              </Container>
-                            </FormGroup>
-                          </TableRow>
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button variant="contained" style={styleButtonCancel} onClick={() => deleteTaxDeduct(taxDeductId)}>
-                          Delete
-                        </Button>
-                        <Button variant="contained" style={styleButtonCancel} onClick={() => handleClose()}>
-                          Cancel
-                        </Button>
-                        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxDeductDetail(year, taxDeductId, taxDeductName,taxDeductGroupName, deductGroupId, no, action,indexClick,effectiveDate)}>
-                          Submit
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </div>
-                </ThemeProvider>
-                <div>
-                  <Dialog
-                    open={openModelYaer}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">{"หากคุณเปลี่ยน พ.ศ รายการที่ทำไว้จะถูกเคลียร์ ต้องการจะเปลี่ยน พ.ศ หรือไม่ ?"}</DialogTitle>
-                    <DialogActions>
-                      <Button onClick={handleOpenYaerClose} color="primary">
-                        Cancel
-                      </Button>
-                      <Button onClick={modelYearConfirm} color="primary" autoFocus>
-                        OK
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </div>
-              </TableCell>
-              <TableCell align="right"><SelectCustom label="กลุ่มการลดหย่อน :" value={deductGroupId} listData={listTaxDeductGroup}
-                onChange={(e) => {
-                  handleChangeGroupDeduct(year, e.target.value);
-                }} style={{ width: 180 }} /></TableCell>
-                <TableCell>
-                <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAddMargin40} onClick={() => handleClickOpen('add', taxDeductId)} disabled={!roleRightA}>
-                    Add
+                                  </Form>
+                                </Col>
+                              </FormGroup>
+                            </Col>
+
+                          </Row>
+                        </Container>
+                      </FormGroup>
+                    </TableRow>
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button variant="contained" style={styleButtonCancel} onClick={() => deleteTaxDeduct(taxDeductId)}>
+                    Delete
                   </Button>
-                  </TableCell>
-            </TableRow>
-            <TableContainer className={classes.container} style={{ height: 600 }}>
+                  <Button variant="contained" style={styleButtonCancel} onClick={() => handleClose()}>
+                    Cancel
+                  </Button>
+                  <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxDeductDetail(year, taxDeductId, taxDeductName, taxDeductGroupName, deductGroupId, no, action, indexClick, effectiveDate)}>
+                    Submit
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </div>
+          </ThemeProvider>
+          <div>
+            <Dialog
+              open={openModelYaer}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">{"หากคุณเปลี่ยน พ.ศ รายการที่ทำไว้จะถูกเคลียร์ ต้องการจะเปลี่ยน พ.ศ หรือไม่ ?"}</DialogTitle>
+              <DialogActions>
+                <Button onClick={handleOpenYaerClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={modelYearConfirm} color="primary" autoFocus>
+                  OK
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+        </TableCell>
+        <TableCell align="right"><SelectCustom label="กลุ่มการลดหย่อน :" value={deductGroupId} listData={listTaxDeductGroup}
+          onChange={(e) => {
+            handleChangeGroupDeduct(year, e.target.value);
+          }} style={{ width: 180 }} /></TableCell>
+        <TableCell>
+          <Button variant="contained" startIcon={<SaveIcon />} style={styleButtonAddMargin40} onClick={() => handleClickOpen('add', taxDeductId)} disabled={!roleRightA}>
+            Add
+          </Button>
+        </TableCell>
+      </TableRow>
+      <TableContainer className={classes.container} style={{ height: 600 }}>
         <Table style={{ border: '1px solid #D3D3D3' }} stickyHeader aria-label="sticky table" >
           <EnhancedTableHead
             numSelected={selected.length}
@@ -826,7 +876,7 @@ function EnhancedTableHead(props) {
             onRequestSort={handleRequestSort}
             rowCount={listTaxDeductGroupDetail.length}
           />
-            {/* <TableRow>
+          {/* <TableRow>
               <TableCell style={{ width: 320, fontSize: 18 }}>
                 <p>ลำดับที่</p>
               </TableCell>
@@ -842,8 +892,8 @@ function EnhancedTableHead(props) {
             </TableRow>
           </TableHead> */}
           <TableBody>
-          {stableSort(listTaxDeductGroupDetail, getComparator(order, orderBy))
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            {stableSort(listTaxDeductGroupDetail, getComparator(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((TaxDeductDetail, index) => {
                 const labelId = `enhanced-table-checkbox-${index}`;
                 return (
@@ -852,17 +902,17 @@ function EnhancedTableHead(props) {
                       component="th"
                       id={labelId}
                       scope="row" style={front}>
-                      {TaxDeductDetail.taxDeductId}
+                      {TaxDeductDetail.no}
                     </TableCell>
-                  <TableCell>{TaxDeductDetail.name}</TableCell>
-                  <TableCell>
-                    {roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => handleClickOpen('edit', TaxDeductDetail.taxDeductId,index)} disabled={!roleRightE}>
-                      Edit
-                    </Button>}</TableCell>
-                  <TableCell>
-                    {!roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxDeduct(TaxDeductDetail.taxDeductId,index)} disabled={!roleRightV}>
-                      View
-                    </Button>}</TableCell>
+                    <TableCell>{TaxDeductDetail.name}</TableCell>
+                    <TableCell>
+                      {roleRightE && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => handleClickOpen('edit', TaxDeductDetail.taxDeductId, index)} disabled={!roleRightE}>
+                        Edit
+                      </Button>}</TableCell>
+                    <TableCell>
+                      {!roleRightE && roleRightV && <Button variant="contained" color="primary" style={styleButtonEdit} onClick={() => editTaxDeduct(TaxDeductDetail.taxDeductId, index)} disabled={!roleRightV}>
+                        View
+                      </Button>}</TableCell>
                   </StyledTableRow>);
               })}
             {/* {listTaxDeductGroupDetail.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((TaxDeductDetail, index) => {
@@ -886,9 +936,9 @@ function EnhancedTableHead(props) {
                         </TableCell>
                       );
                     })} */}
-                {/* </TableRow>
+            {/* </TableRow>
               );
-            })} */} 
+            })} */}
           </TableBody>
         </Table>
       </TableContainer>

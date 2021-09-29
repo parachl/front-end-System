@@ -5,8 +5,8 @@ import '../MainMenu.css';
 import SubMenu from './SubMenu';
 import { get } from 'lodash';
 import {useDispatch} from 'react-redux';
-import { showSpinner  } from '../../../action/Constants.action';
-import { hideSpinner } from '../../../action/Constants.action';
+import { showSpinner  } from '../../../redux/action/Constants.action';
+import { hideSpinner } from '../../../redux/action/Constants.action';
 import logo from '../../../image/thai-logo-1.png';
 
 const SideBar = ({ isOpen, toggle }) => {

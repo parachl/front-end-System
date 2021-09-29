@@ -1,4 +1,4 @@
-import { HIDE_POPUP, SHOW_POPUP } from "../constants/Constants";
+import { HIDE_POPUP, SHOW_POPUP } from "../Constants";
 
 export const showPopup = (payload) => ({
   type: SHOW_POPUP,

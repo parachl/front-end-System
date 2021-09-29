@@ -5,7 +5,6 @@ import { Loading } from './FullPageLoader.style';
 
 
 const FullPageLoader = () => {
-  
     const {isShow} = useSelector((state) => state.spinner);
     return (
       isShow && <Loading>

@@ -10,6 +10,8 @@ import api from '../../api/GetApi';
 import apiLogin from '../../api/GetApiLogin';
 import axios from "axios";
 
+import Swal from "sweetalert2";
+
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -34,10 +36,16 @@ const Login = () => {
                  localStorage.setItem('currentUser', JSON.stringify(data));
                  login(userObj);
              } else {
-                 alert('username or password is incorrect');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Username or Password is incorrect',
+                  });
              }
          } else {
-             alert('error');
+            Swal.fire({
+                icon: "error",
+                title: "เกิดข้อผิดพลาด",
+              });
          }
 
     }
@@ -59,14 +67,20 @@ const Login = () => {
                         history.push("/main");
 
                     } else {
-                        alert('error');
+                        Swal.fire({
+                            icon: "error",
+                            title: "เกิดข้อผิดพลาด",
+                          });
                     }
                     if (responseTwo.status === 200) {
                         console.log("data >>", responseTwo.data);
                         localStorage.setItem('listMenuSetting', JSON.stringify(responseTwo.data));
 
                     } else {
-                        alert('error');
+                        Swal.fire({
+                            icon: "error",
+                            title: "เกิดข้อผิดพลาด",
+                          });
                     }
                 })
             )

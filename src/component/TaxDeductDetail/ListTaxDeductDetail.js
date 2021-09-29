@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
@@ -44,6 +44,9 @@ import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import { store } from "react-notifications-component";
+
+import Swal from "sweetalert2";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -145,7 +148,10 @@ const ListTaxDeductDetail = () => {
         setUpdateUser(user.name);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
   }
 
@@ -170,7 +176,10 @@ const ListTaxDeductDetail = () => {
         setListTaxDeduct(rowsTaxDeduct);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
   }
 
@@ -431,18 +440,27 @@ function EnhancedTableHead(props) {
     if(action === 'add'){
       if (taxDeductDetailObj.year === '' || taxDeductDetailObj.taxDeductId === '' || taxDeductDetailObj.name === '' || taxDeductDetailObj.maxAmt === '' || taxDeductDetailObj.minAmt === '') {
         
-        alert('Please fill in all required fields.');
+        Swal.fire({
+          icon: 'warning',
+          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        });
       } else {
         var index = listTaxDeductDetail.findIndex((x) => x.taxDeductId === taxDeductDetailObj.taxDeductId);
         if (index !== -1) {
-          alert('Duplication Deduct.');
+          Swal.fire({
+            icon: 'warning',
+            title: 'ข้อมูลซ้้ำ',
+          });
         }else{
           setListTaxDeductDetail([...listTaxDeductDetail.slice(0, listTaxDeductDetail.length), taxDeductDetailObj]);
         }
       }
     }else{
       if (taxDeductDetailObj.year === '' || taxDeductDetailObj.taxDeductId === '' || taxDeductDetailObj.name === '' || taxDeductDetailObj.maxAmt === '' || taxDeductDetailObj.minAmt === '') {
-        alert('Please fill in all required fields.');
+        Swal.fire({
+          icon: 'warning',
+          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        });
       } else {
         var index = listTaxDeductDetail.findIndex((x) => x.taxDeductId === taxDeductId);
         if (index !== -1) {
@@ -482,7 +500,10 @@ function EnhancedTableHead(props) {
         handleOpenMessageDupEffective();
       }
     } else {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     }
   }
 
@@ -503,13 +524,21 @@ function EnhancedTableHead(props) {
       console.log('data', data);
       if (data === 'success') {
         fetcData(year);
-        alert('Success');
+        Swal.fire({
+          icon: 'success',
+          title: 'บันทึกสำเร็จ',
+        });
       } else if (data === 'duplicate') {
-        console.log('data', data);
-        alert('Data Duplicate');
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้้ำ',
+        });
       }
     } else {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     }
     handleMessageDupEffectiveClose();
   }

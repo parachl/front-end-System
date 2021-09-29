@@ -1,3 +1,5 @@
+import { red } from "@material-ui/core/colors";
+
 export const colors = {
     BORDER: '#cccccc',
     PRIMARY: '#00ffcc',
@@ -108,4 +110,8 @@ export const styleDivButton = {
   export const headTable = {
     background:  '#ced2d8',
     fontWeight: 900,fontSize:'1.000rem'
+  };
+
+  export const required = {
+    color: 'red',
   };

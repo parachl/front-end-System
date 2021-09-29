@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, withRouter } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
@@ -33,7 +33,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SelectCustom } from '../reuse/SelectCustom';
 import FormControl from '@material-ui/core/FormControl';
-import { styleDivButton, styleButton, styleButtonCancel } from '../../themes/style';
+import { styleDivButton, styleButton, styleButtonCancel,required } from '../../themes/style';
+
+import Swal from "sweetalert2";
 // import Row from './Rows';
 
 
@@ -52,7 +54,7 @@ const AddIncomeCatalog = () => {
   const dispathch = useDispatch();
   const history = useHistory();
 
-  const [code, setCode] = useState('');
+  const [incomeCatalogId, setIncomeCatalogId] = useState('');
   const [name, setName] = useState('');
   const [nameTh, setNameTh] = useState('');
   const [nameEn, setNameEn] = useState('');
@@ -66,6 +68,7 @@ const AddIncomeCatalog = () => {
   const [createTime, setCreateTime] = useState(new Date());
   const [updateUser, setUpdateUser] = useState('');
   const [listTaxCatalog, setListTaxCatalog] = useState([]);
+  const [submit, setSubmit] = useState(false);
   const user = JSON.parse(localStorage.getItem('currentUser'));
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
 
@@ -107,7 +110,10 @@ const AddIncomeCatalog = () => {
         }
         setListTaxCatalog(taxCatalogs);
       } else {
-        alert('error');
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+        });
       }
     }
   }
@@ -117,19 +123,29 @@ const AddIncomeCatalog = () => {
     fetcDataTaxCatalog();
   }, []);
 
-  const submitAddTaxIncome = async (code, name, nameTh, nameEn, description, descriptionTh, descriptionEn, taxCatalog, taxRate, status, effectiveDate) => {
-    const taxIncomeCodeObj = { code: code, name: name, nameTh: nameTh, nameEn: nameEn, description: description, descriptionTh: descriptionTh, descriptionEn: descriptionEn, taxCatalog: taxCatalog, taxRate: taxRate, status: status, effectiveDate: effectiveDate };
+  const submitAddTaxIncome = async (incomeCatalogId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, taxCatalog, taxRate, status, effectiveDate) => {
+    const taxIncomeCodeObj = { incomeCatalogId: incomeCatalogId, name: name, nameTh: nameTh, nameEn: nameEn, description: description, descriptionTh: descriptionTh, descriptionEn: descriptionEn, taxCatalog: taxCatalog, taxRate: taxRate, status: status, effectiveDate: effectiveDate };
+    setSubmit(true);
     if (taxIncomeCodeObj.name === '' || taxIncomeCodeObj.code === '' || taxIncomeCodeObj.taxCatalog === '' || taxIncomeCodeObj.taxRate === '' || taxIncomeCodeObj.effectiveDate === '') {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     } else {
       console.log('taxIncomeCodeObj', taxIncomeCodeObj);
       const { status, data } = await AuthenService.callApi("POST").post("/taxIncomeCode/addTaxIncomeCode", taxIncomeCodeObj);
       console.log('data', data);
       if (data === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'บันทึกสำเร็จ',
+        });
         history.push("/listIncomeCatalog");
       } else if (data === 'duplicate') {
-        console.log('data', data);
-        alert('Data Duplicate');
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้้ำ',
+        });
       }
     }
   }
@@ -152,25 +168,26 @@ const AddIncomeCatalog = () => {
                   <Row >
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={4}>รหัส</Label>
+                        <Label className="form-group" sm={4}>รหัส<label style={required}>{"*"}</label></Label>
                         <Col sm={7}>
                           <FormControl className={classes.formControl}>
-                            <Input className="form-group" type="text" value={code} onChange={(e) => {
-                              setCode(e.target.value);
-                            }} placeholder="with a placeholder" invalid />
-                            <FormFeedback>Oh noes! that name is already taken</FormFeedback>
+                            <Input className="form-group" type="text" value={incomeCatalogId} onChange={(e) => {
+                              setIncomeCatalogId(e.target.value);
+                            }} placeholder="with a placeholder" invalid={incomeCatalogId === "" && submit} />
+                            <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={3}>ชื่อ</Label>
+                        <Label className="form-group" sm={3}>ชื่อ<label style={required}>{"*"}</label></Label>
                         <Col sm={7}>
                           <FormControl className={classes.formControl}>
                             <Input className="form-group" type="text" value={name} onChange={(e) => {
                               setName(e.target.value);
-                            }} placeholder="with a placeholder" />
+                            }} placeholder="with a placeholder" invalid={name === "" && submit} />
+                            <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
@@ -205,59 +222,56 @@ const AddIncomeCatalog = () => {
                   <Row >
                   <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={3}>รายละเอียด</Label>
-                        <Col sm={8}>
+                      <Label className="form-group" sm={2}>รายละเอียด</Label>
+                        <Col sm={7}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="textarea" value={description} onChange={(e) => {
                         setDescription(e.target.value);
-                      }} placeholder="with a placeholder" style={{ width: 680}} />
+                      }} placeholder="with a placeholder" style={{ width: 720}} />
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
-                    <Col></Col>
                   </Row>
                   <Row>
                   <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={3}>รายละเอียด (TH)</Label>
-                        <Col sm={8}>
+                      <Label className="form-group" sm={2}>รายละเอียด (TH)</Label>
+                        <Col sm={7}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="textarea" value={descriptionTh} onChange={(e) => {
                         setDescriptionTh(e.target.value);
-                      }} placeholder="with a placeholder" style={{ width: 680}} />
+                      }} placeholder="with a placeholder" style={{ width: 720}} />
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
-                    <Col></Col>
                   </Row>
                   <Row >
                   <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={3}>รายละเอียด (EN)</Label>
-                        <Col sm={8}>
+                      <Label className="form-group" sm={2}>รายละเอียด (EN)</Label>
+                        <Col sm={7}>
                           <FormControl className={classes.formControl}>
                       <Input className="form-group" type="textarea" value={descriptionEn} onChange={(e) => {
                         setDescriptionEn(e.target.value);
-                      }} placeholder="with a placeholder" style={{ width: 680}} />
+                      }} placeholder="with a placeholder" style={{ width: 720}} />
                           </FormControl>
                         </Col>
                       </FormGroup>
                     </Col>
-                    <Col></Col>
                   </Row>
                   <Row >
                     <Col>
                       <SelectCustom label="ประเภทภาษี :" value={taxCatalog} listData={listTaxCatalog}
                         onChange={(e) => {
                           handleChangeTaxCatalog(e.target.value);
-                        }} style={{ width: 180 }} />
+                        }} style={{ width: 180 }} requiredField={true} invalid={taxCatalog === "" && submit} />
                     </Col>
                     <Col>
                       <FormGroup row>
-                      <Label className="form-group" sm={4}>ตารางภาษี</Label>
-                        <Col sm={8}>
+                      <Label className="form-group" sm={4}>ตารางภาษี<label style={required}>{"*"}</label></Label>
+                        <Col sm={7}>
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={taxRate} onChange={(e) => {
                         setTaxRate(e.target.value);
@@ -276,10 +290,11 @@ const AddIncomeCatalog = () => {
                     </Col>
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={4}>วันที่มีผล  :</Label>
+                        <Label className="form-group" sm={4}>วันที่มีผล<label style={required}>{"*"}</label></Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
-                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} />
+                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} invalid={effectiveDate === "" && submit} />
+                            <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>
@@ -314,7 +329,7 @@ const AddIncomeCatalog = () => {
         </Table>
       </TableContainer>
       <div style={styleDivButton}>
-        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxIncome(code, name, nameTh, nameEn, description, descriptionTh, descriptionEn, taxCatalog, taxRate, status, effectiveDate)}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddTaxIncome(incomeCatalogId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, taxCatalog, taxRate, status, effectiveDate)}>
           Submit
         </Button>
         <Button variant="contained" style={styleButtonCancel} onClick={() => cancel()}>
@@ -325,4 +340,4 @@ const AddIncomeCatalog = () => {
   );
 }
 
-export default withRouter(AddIncomeCatalog);
+export default AddIncomeCatalog;

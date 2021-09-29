@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
@@ -35,6 +35,8 @@ import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
+import Swal from "sweetalert2";
+
 const ListTaxRate = () => {
   const useRowStyles = makeStyles({
     root: {
@@ -59,7 +61,7 @@ const ListTaxRate = () => {
   let rowsTaxRate = [{}];
   let listCheckBox = [{}];
   const [listTaxRate, setListTaxRate] = useState([]);
-  let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'}];
+  let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'},{show:'All',value:'all'}];
 
   function appendLeadingZeroes(n) {
     if (n <= 9) {
@@ -91,7 +93,10 @@ const ListTaxRate = () => {
         setCheckedList(listCheckBox);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
     console.log('fetcData data > ', data);
   }
@@ -141,7 +146,10 @@ const deleteTaxRate = async () => {
     const { status, data } = await AuthenService.callApi("POST").post("/taxRate/deleteTaxRate",taxRateCodeObjC);
     if (status === 200) {
       if(data === 'fail'){
-        alert('Cannot delete this item because it is used.');
+        Swal.fire({
+          icon: "error",
+          title: "Cannot delete this item because it is used.",
+        });
       }else{
         fetcData();
       }

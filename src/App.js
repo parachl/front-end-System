@@ -8,11 +8,13 @@ import MainMenu from './component/mainMenu/MainMenu.js';
 import LoginPage from './component/login/Login.js';
 import './component/mainMenu/MainMenu.css';
 import FullPageLoader from './component/fullPageLoader/FullPageLoader';
-import { showSpinner  } from './action/Constants.action';
-import { hideSpinner } from './action/Constants.action';
+import { showSpinner  } from '../src/redux/action/Constants.action';
+import { hideSpinner } from '../src/redux/action/Constants.action';
 import {useDispatch} from 'react-redux';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons'
+import ReactNotification from 'react-notifications-component'
+import 'react-notifications-component/dist/theme.css'
 
 function App() {
   

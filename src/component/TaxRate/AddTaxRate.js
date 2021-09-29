@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, withRouter } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
-import { FormGroup, Label, Row, Col, Form, Input, Container } from 'reactstrap';
+import { FormGroup, Label, Row, Col, Form, Input, Container,FormFeedback } from 'reactstrap';
 import FormControl from '@material-ui/core/FormControl';
 import api from "../../api/GetApi";
 import { get } from 'lodash';
@@ -33,9 +33,10 @@ import Button from '@material-ui/core/Button';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SelectCustom } from '../reuse/SelectCustom';
-import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
+import {styleDivButton,styleButton,styleButtonCancel,required} from '../../themes/style';
 // import Row from './Rows';
-
+import { store } from "react-notifications-component";
+import Swal from "sweetalert2";
 
 const AddTaxRate = () => {
   const useStyles = makeStyles((theme) => ({
@@ -62,6 +63,7 @@ const AddTaxRate = () => {
   const [effectiveDate, setEffectiveDate] = useState(new Date());
   const [createTime, setCreateTime] = useState(new Date());
   const [updateUser, setUpdateUser] = useState('');
+  const [submit, setSubmit] = useState(false);
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
   const user = JSON.parse(localStorage.getItem('currentUser'));
 
@@ -92,17 +94,27 @@ const AddTaxRate = () => {
 
   const submitAddTaxRate = async (taxRateId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate) => {
     const taxRateObj = { taxRateId: taxRateId, name: name, nameTh: nameTh, nameEn: nameEn, description: description, descriptionTh: descriptionTh, descriptionEn: descriptionEn, status: status, effectiveDate: effectiveDate };
+    setSubmit(true);
     if (taxRateObj.name === '' || taxRateObj.taxRateId === '' || taxRateObj.effectiveDate === '') {
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     } else {
       console.log('taxRateObj', taxRateObj);
       const { status, data } = await AuthenService.callApi("POST").post("/taxRate/addTaxRate", taxRateObj);
       console.log('data', data);
       if (data === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'บันทึกสำเร็จ',
+        });
         history.push("/listTaxRate");
       } else if (data === 'duplicate') {
-        console.log('data', data);
-        alert('Data Duplicate');
+        Swal.fire({
+          icon: 'warning',
+          title: 'ข้อมูลซ้้ำ',
+        });
       }
     }
   }
@@ -125,53 +137,113 @@ const AddTaxRate = () => {
               <FormGroup style={{ width: 1080, padding: 15 }}>
                 <Container>
                   <Row >
-                    <Col>
-                      <Label className="form-group" sm={4}>รหัส</Label>
-                      <Input className="form-group" type="text" value={taxRateId} onChange={(e) => {
+                  <Col>
+                      <FormGroup row>
+                      <Label className="form-group" sm={4}>รหัส<label style={required}>{"*"}</label></Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
+                          <Input className="form-group" type="text" value={taxRateId} onChange={(e) => {
                         setTaxRateId(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" invalid={taxRateId === "" && submit} />
+                      <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
                     </Col>
                     <Col>
-                      <Label className="form-group" sm={4}>ชื่อ</Label>
-                      <Input className="form-group" type="text" value={name} onChange={(e) => {
+                      <FormGroup row>
+                      <Label className="form-group" sm={3}>ชื่อ<label style={required}>{"*"}</label></Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
+                          <Input className="form-group" type="text" value={name} onChange={(e) => {
                         setName(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" invalid={name === "" && submit} />
+                      <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
                     </Col>
+                    </Row>
+                    <Row>
                     <Col>
-                      <Label className="form-group" sm={5}>ชื่อ (TH)</Label>
-                      <Input className="form-group" type="text" value={nameTh} onChange={(e) => {
+                      <FormGroup row>
+                      <Label className="form-group" sm={4}>ชื่อ (TH)</Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
+                          <Input className="form-group" type="text" value={nameTh} onChange={(e) => {
                         setNameTh(e.target.value);
                       }} placeholder="with a placeholder" />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
                     </Col>
                     <Col>
-                      <Label className="form-group" sm={5}>ชื่อ (EN)</Label>
-                      <Input className="form-group" type="text" value={nameEn} onChange={(e) => {
+                      <FormGroup row>
+                      <Label className="form-group" sm={3}>ชื่อ (EN)</Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
+                          <Input className="form-group" type="text" value={nameEn} onChange={(e) => {
                         setNameEn(e.target.value);
                       }} placeholder="with a placeholder" />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
                     </Col>
                   </Row>
                   <Row >
-                    <Col>
-                      <Label className="form-group" sm={4}>รายละเอียด</Label>
-                      <Input className="form-group" type="textarea" value={description} onChange={(e) => {
+                  <Col>
+                      <FormGroup row>
+                      <Label className="form-group" sm={2}>รายละเอียด</Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
+                          <Input className="form-group" type="textarea" value={description} onChange={(e) => {
                         setDescription(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" style={{ width: 720}} />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
                     </Col>
                   </Row>
                   <Row >
-                    <Col>
-                      <Label className="form-group" sm={4}>รายละเอียด (TH)</Label>
-                      <Input className="form-group" type="textarea" value={descriptionTh} onChange={(e) => {
+                  <Col>
+                      <FormGroup row>
+                      <Label className="form-group" sm={2}>รายละเอียด</Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
+                          <Input className="form-group" type="textarea" value={description} onChange={(e) => {
+                        setDescription(e.target.value);
+                      }} placeholder="with a placeholder" style={{ width: 720}} />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                  <Col>
+                      <FormGroup row>
+                      <Label className="form-group" sm={2}>รายละเอียด (TH)</Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
+                          <Input className="form-group" type="textarea" value={descriptionTh} onChange={(e) => {
                         setDescriptionTh(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" style={{ width: 720}} />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
                     </Col>
                   </Row>
                   <Row >
-                    <Col>
-                      <Label className="form-group" sm={4}>รายละเอียด (EN)</Label>
+                  <Col>
+                      <FormGroup row>
+                      <Label className="form-group" sm={2}>รายละเอียด (EN)</Label>
+                        <Col sm={7}>
+                          <FormControl className={classes.formControl}>
                       <Input className="form-group" type="textarea" value={descriptionEn} onChange={(e) => {
                         setDescriptionEn(e.target.value);
-                      }} placeholder="with a placeholder" />
+                      }} placeholder="with a placeholder" style={{ width: 720}} />
+                          </FormControl>
+                        </Col>
+                      </FormGroup>
                     </Col>
                   </Row>
                   <Row >
@@ -183,10 +255,11 @@ const AddTaxRate = () => {
                     </Col>
                     <Col>
                       <FormGroup row>
-                        <Label className="form-group" sm={4}>วันที่มีผล  :</Label>
+                        <Label className="form-group" sm={4}>วันที่มีผล<label style={required}>{"*"}</label></Label>
                         <Col sm={6}>
                           <FormControl className={classes.formControl}>
-                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} />
+                            <DatePicker selected={effectiveDate} onChange={(date) => setEffectiveDate(date)} invalid={effectiveDate === "" && submit} />
+                            <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>
                       </FormGroup>

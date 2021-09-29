@@ -6,8 +6,8 @@ import { MDBTable, MDBTableBody, MDBTableHead } from "mdbreact";
 import { confirm } from "../../component/reuse/Comfirmation";
 import api from "../../api/GetApi";
 import { useHistory } from 'react-router-dom';
-import { showSpinner  } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner  } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import {useDispatch} from 'react-redux';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
@@ -28,6 +28,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import InputBase from '@material-ui/core/InputBase';
 import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 import { get } from 'lodash';
+
+import Swal from "sweetalert2";
 
 const AddUserRole = () => {
   const dispathch = useDispatch();
@@ -134,7 +136,10 @@ const AddUserRole = () => {
       }
       //  console.log("rowsRole >>", rowsRole);
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
 
   }
@@ -173,12 +178,12 @@ const AddUserRole = () => {
         // setListRoleMenu(objRoleArray);
         // setCheckedMenu(objCheckedArray)
       }
-
-     
-      console.log('users 111111> ', users);
       //  console.log("rowsRole >>", rowsRole);
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
   }
 
@@ -218,7 +223,10 @@ const AddUserRole = () => {
         history.push("/listUserRole");
       }
     }else{
-      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     }
     
   }

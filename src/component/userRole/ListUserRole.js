@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
@@ -28,6 +28,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import Checkbox from '@material-ui/core/Checkbox';
 import {styleButtonAdd,styleButtonsearch,styleButtonClear,styleButtonEdit,styleButtonDelete,colStatus,styleButtonDeleteUser,styleTextUserName} from '../../themes/style';
+
+import Swal from "sweetalert2";
 
 const ListUserRole = () => {
   const useRowStyles = makeStyles({
@@ -106,7 +108,10 @@ const ListUserRole = () => {
       }
       console.log("userRoles >>", userRoles);
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
 
   }
@@ -166,7 +171,10 @@ const ListUserRole = () => {
       }
       console.log("userRoles >>", userRoles);
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
 
     
@@ -218,7 +226,10 @@ const ListUserRole = () => {
         const { status, data } = await AuthenService.callApi("POST").post("/userRole/deleteUserRole",userRoleObjC);
         if (status === 200) {
           if(data === 'fail'){
-            alert('error please contact admin');
+            Swal.fire({
+              icon: 'warning',
+              title: 'error please contact admin',
+            });
           }else{
             fetcData();
           }

@@ -29,8 +29,8 @@ import classNames from "classnames";
 import Topbar from "./TopBar/TopBar";
 import About from "../about/About";
 import {useDispatch} from 'react-redux';
-import { showSpinner  } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner  } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { authenticationService } from '../../_services/authentication.service';
 import LoginPage from '../login/Login';
 import api from '../../api/GetApi';
@@ -40,6 +40,7 @@ import EditTaxSystemInfo from "../TaxSystemInfo/EditTaxSystemInfo";
 import ListTaxOpcode from '../TaxOpcode/ListTaxOpcode';
 import AddTaxOpcode from "../TaxOpcode/AddTaxOpcode";
 import EditTaxOpcode from "../TaxOpcode/EditTaxOpcode";
+import {Popup} from '../reuse/Shared'
 
 const MainMenu = () => {
   const [sidebarIsOpen, setSidebarOpen] = useState(false);
@@ -63,7 +64,7 @@ const MainMenu = () => {
     // authenticationService.getMenu();
     setTimeout(function() {
       dispathch(hideSpinner())
-    }, 300);
+    }, 1000);
     
  
   },[]);   
@@ -79,7 +80,7 @@ const MainMenu = () => {
       >
         <Topbar toggleSidebar={toggleSidebar} />
         <Switch>
-
+        {/* <Popup/> */}
         <Route path="/listRole" render={(props) => <ListRole {...props}/> } />
 <Route path="/addRole" render={(props) => <AddRole {...props}/> } />
 <Route path="/editRole" render={(props) => <EditRole {...props}/> } />

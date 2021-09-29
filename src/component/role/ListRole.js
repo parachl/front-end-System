@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory,withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
@@ -23,6 +23,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import {styleButtonAdd,styleButtonsearch,styleButtonClear,styleButtonEdit,styleButtonDelete,colStatus} from '../../themes/style';
 import './Role.css';
+import Swal from "sweetalert2";
 
 const ListRole = () => {
   const useRowStyles = makeStyles({
@@ -79,7 +80,10 @@ const ListRole = () => {
         setCheckedList(listCheckBox);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
     console.log('fetcData data > ', data);
   }
@@ -128,7 +132,10 @@ const deleteUserRole = async () => {
     const { status, data } = await AuthenService.callApi("POST").post("/role/deleteRole",roleObjC);
     if (status === 200) {
       if(data === 'fail'){
-        alert('Cannot delete this item because it is used.');
+        Swal.fire({
+          icon: "error",
+          title: "Cannot delete this item because it is used.",
+        });
       }else{
         fetcData();
       }

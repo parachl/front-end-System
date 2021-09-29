@@ -1,4 +1,4 @@
-import { SHOW_SPINNER,HIDE_LOADER } from "../constants/Constants";
+import { SHOW_SPINNER,HIDE_LOADER } from "../Constants";
 
 
 const initalState = {

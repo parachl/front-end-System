@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
@@ -30,6 +30,8 @@ import InputBase from '@material-ui/core/InputBase';
 import { get } from 'lodash';
 import {styleDivButton,styleButton,styleButtonCancel} from '../../themes/style';
 
+import Swal from "sweetalert2";
+
 const EditUserRole = () => {
   const dispathch = useDispatch();
   const history = useHistory();
@@ -55,7 +57,10 @@ const EditUserRole = () => {
         setListRole(rowsRole);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
 
   }
@@ -84,7 +89,10 @@ const EditUserRole = () => {
                     setUserList(userArray);
                   }
                 } else {
-                    alert('error');
+                  Swal.fire({
+                    icon: "error",
+                    title: "เกิดข้อผิดพลาด",
+                  });
                 }
               }
                 if (responseTwo.status === 200) {
@@ -127,7 +135,10 @@ const EditUserRole = () => {
                    
 
                 } else {
-                    alert('error');
+                  Swal.fire({
+                    icon: "error",
+                    title: "เกิดข้อผิดพลาด",
+                  });
                 }
             })
         )
@@ -181,7 +192,10 @@ const EditUserRole = () => {
         history.push("/listUserRole");
       }
     } else {
-      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     }
 
   }

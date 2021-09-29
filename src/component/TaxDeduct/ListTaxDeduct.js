@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, withRouter } from 'react-router-dom';
 import { PageBox, SearchBox } from '../reuse/PageBox';
@@ -35,6 +35,10 @@ import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { styled } from '@mui/material/styles';
+import {Popup} from '../reuse/Shared'
+
+import { hidePopup } from '../../redux/action/Constants.action';
+import Swal from "sweetalert2";
 
 const ListTaxDeduct = () => {
   const useRowStyles = makeStyles({
@@ -61,7 +65,7 @@ const ListTaxDeduct = () => {
   let rowsTaxDeduct = [{}];
   let listCheckBox = [{}];
   const [listTaxDeduct, setListTaxDeduct] = useState([]);
-  let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
+  let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' },{show:'All',value:'all'}];
 
   function appendLeadingZeroes(n) {
     if (n <= 9) {
@@ -93,7 +97,10 @@ const ListTaxDeduct = () => {
         setCheckedList(listCheckBox);
       }
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
     console.log('fetcData data > ', data);
   }
@@ -105,7 +112,6 @@ const ListTaxDeduct = () => {
   useEffect(() => {
     console.log('2');
     const result = AuthenService.checkPermission('Tax Deduct', 'L');
-
     if (!result) {
       history.push("/main");
     }
@@ -143,7 +149,10 @@ const ListTaxDeduct = () => {
       const { status, data } = await AuthenService.callApi("POST").post("/taxDeduct/deleteTaxDeduct", taxDeductCodeObjC);
       if (status === 200) {
         if (data === 'fail') {
-          alert('Cannot delete this item because it is used.');
+          Swal.fire({
+            icon: "error",
+            title: "Cannot delete this item because it is used.",
+          });
         } else {
           fetcData();
         }
@@ -375,6 +384,7 @@ const ListTaxDeduct = () => {
 
   return (
     <PageBox>
+      {/* <Popup/> */}
       <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>รหัสลดหย่อนภาษี <IconButton style={{ float: 'right', right: '0px', marginBottom: '20px' }} aria-label="expand row" size="small" onClick={() => handleClick()}>
       filter{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
       </IconButton> </tableRow></div>

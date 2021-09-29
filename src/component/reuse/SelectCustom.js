@@ -9,6 +9,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import { required } from '../../themes/style';
+
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -19,14 +21,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SelectCustom = ({ label, value, onChange,listData }) => {
+export const SelectCustom = ({ label, value, onChange,listData,requiredField }) => {
   
   const classes = useStyles();
 
     return (
         <Form>
             <FormGroup row>
-                <Label className="form-group" sm={4}>{label}</Label>
+                <Label className="form-group" sm={4}>{label}<label style={required}>{(value === "" && requiredField) ? "*" : ""}</label></Label>
                 <Col sm={8}>
                 <FormControl className={classes.formControl}>
         <NativeSelect
@@ -52,10 +54,12 @@ SelectCustom.defaultProps = {
     label: "",
     value: "",
     onChange: () => { },
+    requiredField:false
 }
 
 SelectCustom.propsTypes = {
     label: PropsTypes.string,
     value: PropsTypes.string,
     onChange: PropsTypes.func,
+    requiredField:PropsTypes.bool
 }

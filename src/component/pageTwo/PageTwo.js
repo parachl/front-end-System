@@ -1,7 +1,7 @@
 import React ,{useEffect} from 'react';
 import {useDispatch} from 'react-redux';
-import { showSpinner  } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner  } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory } from 'react-router-dom';
 

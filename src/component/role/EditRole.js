@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { showSpinner } from '../../action/Constants.action';
-import { hideSpinner } from '../../action/Constants.action';
+import { showSpinner } from '../../redux/action/Constants.action';
+import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
@@ -29,6 +29,8 @@ import { RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
 import { InputLabelReuse } from '../reuse/InputLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+
+import Swal from "sweetalert2";
 
 const EditRole = (roleObj) => {
   const useRowStyles = makeStyles({
@@ -150,7 +152,10 @@ const EditRole = (roleObj) => {
       setCheckedMenu(objCheckedArray);
       setCheckedGroupMenu(objArray);
     } else {
-      alert('error');
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+      });
     }
 
   }
@@ -192,7 +197,10 @@ const EditRole = (roleObj) => {
     }
     const roleObj = {id: dataRole.id, roleName: roleName, listRoleMenuObj: ArrayRoleMenu,createBy: dataRole.createBy, createDate: dataRole.createDate, updateDate: dataRole.updateDate, updateBy: dataRole.updateBy, status: dataRole.status };
     if(roleObj.roleName === '' || roleObj.listRoleMenuObj.length === 0){
-      alert('Please fill in all required fields.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
     }
     console.log('roleObj', roleObj);
     const { status, data } = await AuthenService.callApi("POST").post("/role/editRole",roleObj);
@@ -200,7 +208,10 @@ const EditRole = (roleObj) => {
     if (data === 'success') {
       history.push("/listRole");
     }else if(data === 'duplicate'){
-      alert('Data Duplicate');
+      Swal.fire({
+        icon: 'warning',
+        title: 'ข้อมูลซ้้ำ',
+      });
     }
   }
 
