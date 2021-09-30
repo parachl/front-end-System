@@ -179,7 +179,7 @@ const EditTaxSystemInfo = () => {
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={systemId} onChange={(e) => {
                         setSystemId(e.target.value);
-                      }} placeholder="with a placeholder" invalid={systemId === "" && submit} />
+                      }} placeholder="with a placeholder" invalid={systemId === "" && submit} disabled />
                       <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

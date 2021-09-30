@@ -60,6 +60,7 @@ const ListTaxDeductGroup = () => {
   const [roleRightV, setRoleRightV] = useState(false);
   let rowsTaxDeductGroup = [{}];
   let listCheckBox = [{}];
+  const [maxId, setMaxid] = useState('');
   const [listTaxDeductGroup, setListTaxDeductGroup] = useState([]);
   let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'},{show:'All',value:'all'}];
 
@@ -91,6 +92,7 @@ const ListTaxDeductGroup = () => {
         }
         setListTaxDeductGroup(rowsTaxDeductGroup);
         setCheckedList(listCheckBox);
+        setMaxid(parseInt(data.maxId));
       }
     } else {
       Swal.fire({
@@ -151,6 +153,10 @@ const deleteTaxDeductGroup = async () => {
           title: "Cannot delete this item because it is used.",
         });
       }else{
+        Swal.fire({
+          icon: 'success',
+          title: 'ลบรายการสำเร็จ',
+        });
         fetcData();
       }
     }
@@ -383,7 +389,7 @@ const theme = createTheme({
 });
 
 const addTaxDeductGroup= () => {
-  history.push("/addTaxDeductGroup");
+  history.push("/addTaxDeductGroup", {maxId:maxId });
 }
 
 const [page, setPage] = React.useState(0);

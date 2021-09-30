@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../redux/action/Constants.action';
 import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory, withRouter } from 'react-router-dom';
+import { useHistory, withRouter, useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
 import { FormGroup, Label, Row, Col, Form, Input, Container,FormFeedback } from 'reactstrap';
@@ -35,6 +35,7 @@ import { SelectCustom } from '../reuse/SelectCustom';
 import FormControl from '@material-ui/core/FormControl';
 import { styleDivButton, styleButton, styleButtonCancel,required } from '../../themes/style';
 
+import { fuctionService } from '../../_services/fuction.service';
 import Swal from "sweetalert2";
 // import Row from './Rows';
 
@@ -71,7 +72,7 @@ const AddIncomeCatalog = () => {
   const [submit, setSubmit] = useState(false);
   const user = JSON.parse(localStorage.getItem('currentUser'));
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
-
+  const location = useLocation();
   let taxCatalogs = [];
 
   const handleChangeStatus = (event) => {
@@ -120,6 +121,8 @@ const AddIncomeCatalog = () => {
 
   useEffect(() => {
     initPage();
+    let maxId = fuctionService.genarateId(location.state.maxId+1);
+    setIncomeCatalogId(maxId);
     fetcDataTaxCatalog();
   }, []);
 

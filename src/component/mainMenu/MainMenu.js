@@ -71,7 +71,8 @@ const MainMenu = () => {
 
   return (
      <BrowserRouter basename={'/tax'}>
-    {/* <BrowserRouter> */}
+       
+    {/* //  <BrowserRouter>  */}
     <div className="Main wrapper">
         <SideBar toggle={toggleSidebar} isOpen={sidebarIsOpen}/>
       <Container

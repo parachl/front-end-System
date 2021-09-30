@@ -59,6 +59,7 @@ const ListTaxOpcode = () => {
   const [roleRightV, setRoleRightV] = useState(false);
   let rowsTaxOpcode = [{}];
   let listCheckBox = [{}];
+  const [maxId, setMaxid] = useState('');
   const [listTaxOpcode, setListTaxOpcode] = useState([]);
   let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'},{show:'All',value:'all'}];
 
@@ -91,6 +92,7 @@ const ListTaxOpcode = () => {
         }
         setListTaxOpcode(rowsTaxOpcode);
         setCheckedList(listCheckBox);
+        setMaxid(parseInt(data.maxId));
       }
     } else {
       Swal.fire({
@@ -151,6 +153,10 @@ const deleteTaxOpcode = async () => {
           title: "Cannot delete this item because it is used.",
         });
       }else{
+        Swal.fire({
+          icon: 'success',
+          title: 'ลบรายการสำเร็จ',
+        });
         fetcData();
       }
     }
@@ -418,7 +424,7 @@ function EnhancedTableHead(props) {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 const addTaxOpcode= () => {
-  history.push("/addTaxOpcode");
+  history.push("/addTaxOpcode", {maxId:maxId });
 }
 
 const [page, setPage] = React.useState(0);

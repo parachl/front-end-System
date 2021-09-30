@@ -33,7 +33,7 @@ import Slide from '@material-ui/core/Slide';
 import { FormGroup, Label, Col, Row, Form, Input, Container } from 'reactstrap';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
-import {styleButtonAdd,styleDivButton,styleButtonEdit,styleButtonDelete,styleButton,styleSelect,styleButtonCancel,front, headTable} from '../../themes/style';
+import {styleButtonAdd,styleDivButton,styleButtonEdit,styleButtonDelete,styleButton,styleSelect,styleButtonCancel,front, headTable,required} from '../../themes/style';
 
 import  { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
@@ -94,7 +94,7 @@ const ListTaxDeductDetail = () => {
 
   const [action,setAction] = useState('');
   const [active,setActive] = useState(false);
-
+  const [submit, setSubmit] = useState(false);
   const [dupEffective,setOpenModelDupEffective] = useState(false);
   function appendLeadingZeroes(n) {
     if (n <= 9) {
@@ -436,14 +436,15 @@ function EnhancedTableHead(props) {
 
   const submitAddTaxDeductDetail = (year, taxDeductId, taxDeductName, taxMaxAmt, taxMinAmt, taxRate, taxExcess,action) => {
     console.log("submitAddTaxDeductDetail taxDeductId", taxDeductId);
+    setSubmit(true);
     const taxDeductDetailObj = { year: year, taxDeductId:taxDeductId, name: taxDeductName, maxAmt: taxMaxAmt, minAmt: taxMinAmt, rate: taxRate, excess: taxExcess };
     if(action === 'add'){
       if (taxDeductDetailObj.year === '' || taxDeductDetailObj.taxDeductId === '' || taxDeductDetailObj.name === '' || taxDeductDetailObj.maxAmt === '' || taxDeductDetailObj.minAmt === '') {
         
-        Swal.fire({
-          icon: 'warning',
-          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-        });
+        // Swal.fire({
+        //   icon: 'warning',
+        //   title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        // });
       } else {
         var index = listTaxDeductDetail.findIndex((x) => x.taxDeductId === taxDeductDetailObj.taxDeductId);
         if (index !== -1) {
@@ -452,15 +453,16 @@ function EnhancedTableHead(props) {
             title: 'ข้อมูลซ้้ำ',
           });
         }else{
+          setOpen(false);
           setListTaxDeductDetail([...listTaxDeductDetail.slice(0, listTaxDeductDetail.length), taxDeductDetailObj]);
         }
       }
     }else{
       if (taxDeductDetailObj.year === '' || taxDeductDetailObj.taxDeductId === '' || taxDeductDetailObj.name === '' || taxDeductDetailObj.maxAmt === '' || taxDeductDetailObj.minAmt === '') {
-        Swal.fire({
-          icon: 'warning',
-          title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-        });
+        // Swal.fire({
+        //   icon: 'warning',
+        //   title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        // });
       } else {
         var index = listTaxDeductDetail.findIndex((x) => x.taxDeductId === taxDeductId);
         if (index !== -1) {
@@ -477,6 +479,7 @@ function EnhancedTableHead(props) {
           setTaxMinAmt('');
           setTaxRate('');
           setTaxExcess('');
+          setOpen(false);
         }
         
       }
@@ -485,7 +488,7 @@ function EnhancedTableHead(props) {
     
    
     setActive(true);
-    setOpen(false);
+    
   }
 
   const findDataMoreCurrentDate = async (effectiveDate) => {
@@ -586,6 +589,7 @@ function EnhancedTableHead(props) {
   const handleClickOpen = (action,taxDeductId) => {
     setOpen(true);
     setAction(action);
+    setSubmit(false);
     console.log('handleClickOpen taxDeductId >>', taxDeductId);
     if (action === 'add') {
       var index = listTaxDeduct.findIndex((x) => x.taxDeductId === taxDeductId);
@@ -646,7 +650,8 @@ function EnhancedTableHead(props) {
                     onClose={handleMessageDupEffectiveClose}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
-                  >
+                    >
+                    
                     <DialogTitle id="alert-dialog-title">{"เนื่องจากมีการกรอกข้อมูลโดยมีวันที่มีผลถูกกำหนดล่วงหน้าแล้ว หากต้องการจะบันทึกทับข้อมูลเดิม กรุณากด 'บันทึก' "}</DialogTitle>
                     <DialogActions>
                       <Button onClick={handleMessageDupEffectiveClose} color="primary">
@@ -748,24 +753,24 @@ function EnhancedTableHead(props) {
                                 <Row >
                                   <Col>
                                     <FormGroup row>
-                                      <Label className="form-group" sm={5}>ต่ำสุดไม่น้อยกว่า :</Label>
+                                      <Label className="form-group" sm={5}>ต่ำสุดไม่น้อยกว่า<label style={required}>{"*"}</label></Label>
                                       <Col sm={5}>
                                         <FormControl className={classes.formControl}>
                                           <Input className="form-group" type="text" value={taxMinAmt} onChange={(e) => {
                                             setTaxMinAmt(e.target.value);
-                                          }} placeholder="with a placeholder" />
+                                          }} placeholder="with a placeholder" invalid={taxMinAmt === "" && submit} />
                                         </FormControl>
                                       </Col>
                                     </FormGroup>
                                   </Col>
                                   <Col>
                                     <FormGroup row>
-                                      <Label className="form-group" sm={5}>สูงสุดไม่มากกว่า :</Label>
+                                      <Label className="form-group" sm={5}>สูงสุดไม่มากกว่า<label style={required}>{"*"}</label></Label>
                                       <Col sm={5}>
                                         <FormControl className={classes.formControl}>
                                           <Input className="form-group" type="text" value={taxMaxAmt} onChange={(e) => {
                                             setTaxMaxAmt(e.target.value);
-                                          }} placeholder="with a placeholder" />
+                                          }} placeholder="with a placeholder" invalid={taxMaxAmt === "" && submit} />
                                         </FormControl>
                                       </Col>
                                     </FormGroup>

@@ -187,7 +187,7 @@ const EditTaxDeduct = () => {
                           <FormControl className={classes.formControl}>
                             <Input className="form-group" type="text" value={taxDeductId} onChange={(e) => {
                               setTaxDeductId(e.target.value);
-                            }} placeholder="with a placeholder" invalid={taxDeductId === "" && submit} />
+                            }} placeholder="with a placeholder" invalid={taxDeductId === "" && submit} disabled />
                             <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

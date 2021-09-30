@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../redux/action/Constants.action';
 import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory, withRouter } from 'react-router-dom';
+import { useHistory, withRouter, useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
 import { FormGroup, Label, Row, Col, Form, Input, Container,FormFeedback } from 'reactstrap';
@@ -37,6 +37,7 @@ import {styleDivButton,styleButton,styleButtonCancel,required} from '../../theme
 // import Row from './Rows';
 import { store } from "react-notifications-component";
 import Swal from "sweetalert2";
+import { fuctionService } from '../../_services/fuction.service';
 
 const AddTaxRate = () => {
   const useStyles = makeStyles((theme) => ({
@@ -65,6 +66,7 @@ const AddTaxRate = () => {
   const [updateUser, setUpdateUser] = useState('');
   const [submit, setSubmit] = useState(false);
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
+  const location = useLocation();
   const user = JSON.parse(localStorage.getItem('currentUser'));
 
   const classes = useStyles();
@@ -89,7 +91,8 @@ const AddTaxRate = () => {
 
   useEffect(() => {
     initPage();
-
+    let maxId = fuctionService.genarateId(location.state.maxId+1);
+    setTaxRateId(maxId)
   }, []);
 
   const submitAddTaxRate = async (taxRateId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate) => {
@@ -144,7 +147,7 @@ const AddTaxRate = () => {
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={taxRateId} onChange={(e) => {
                         setTaxRateId(e.target.value);
-                      }} placeholder="with a placeholder" invalid={taxRateId === "" && submit} />
+                      }} placeholder="with a placeholder" invalid={taxRateId === "" && submit} disabled />
                       <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

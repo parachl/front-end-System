@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../redux/action/Constants.action';
 import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory, withRouter } from 'react-router-dom';
+import { useHistory, withRouter, useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
 import { FormGroup, Label, Row, Col, Form, Input, Container,FormFeedback } from 'reactstrap';
@@ -37,6 +37,7 @@ import {styleDivButton,styleButton,styleButtonCancel,required} from '../../theme
 // import Row from './Rows';
 import { store } from "react-notifications-component";
 import Swal from "sweetalert2";
+import { fuctionService } from '../../_services/fuction.service';
 
 const AddTaxDeductGroup = () => {
   const useStyles = makeStyles((theme) => ({
@@ -67,6 +68,7 @@ const AddTaxDeductGroup = () => {
   const [submit, setSubmit] = useState(false);
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
   const user = JSON.parse(localStorage.getItem('currentUser'));
+  const location = useLocation();
 
   const classes = useStyles();
 
@@ -91,7 +93,9 @@ const AddTaxDeductGroup = () => {
 
   useEffect(() => {
     initPage();
-
+    console.log('maxid',location.state.maxId);
+    let maxId = fuctionService.genarateId2digit(location.state.maxId+1);
+    setDeductGroupId(maxId);
   }, []);
 
   const submitAddTaxDeductGroup = async (deductGroupId, name, nameTh, nameEn, description, descriptionTh, descriptionEn, status, effectiveDate,amount) => {
@@ -146,7 +150,7 @@ const AddTaxDeductGroup = () => {
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={deductGroupId} onChange={(e) => {
                         setDeductGroupId(e.target.value);
-                      }} placeholder="with a placeholder" invalid={deductGroupId === "" && submit} />
+                      }} placeholder="with a placeholder" invalid={deductGroupId === "" && submit} disabled />
                       <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

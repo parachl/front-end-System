@@ -350,6 +350,7 @@ const ListTaxDeduct = () => {
             icon: 'warning',
             title: 'ข้อมูลซ้้ำ',
           });
+          setOpen(false);
         } else {
           setListTaxDeductGroupDetail([...listTaxDeductGroupDetail.slice(0, listTaxDeductGroupDetail.length), taxDeductDetailObj]);
           setTaxDeductId(listTaxDeduct[0].taxDeductId);
@@ -373,11 +374,21 @@ const ListTaxDeduct = () => {
           setNo('');
           setTaxDeductId(listTaxDeduct[0].taxDeductId);
           setOpen(false);
-        } else {
+        } else if(index === -1){
+          let g = listTaxDeductGroupDetail[indexClick];
+          g.name = taxDeductDetailObj.name;
+          g.taxDeductId = taxDeductDetailObj.taxDeductId;
+          setListTaxDeductGroupDetail([...listTaxDeductGroupDetail.slice(0, indexClick), g, ...listTaxDeductGroupDetail.slice(indexClick + 1)]);
+          setTaxDeductName('');
+          setNo('');
+          setTaxDeductId(listTaxDeduct[0].taxDeductId);
+          setOpen(false);
+        }else{
           Swal.fire({
             icon: 'warning',
             title: 'ข้อมูลซ้้ำ',
           });
+          setOpen(false);
         }
 
       }
@@ -414,7 +425,7 @@ const ListTaxDeduct = () => {
       let listTaxDeductGroupDetailObj = [];
       let taxDeductDetailObjC = {};
       for (let j = 0; j < listTaxDeductGroupDetail.length; j++) {
-        const taxDeductDetailObj = { year: listTaxDeductGroupDetail[j].year, taxDeductId: listTaxDeductGroupDetail[j].taxDeductId, no: j, deductGroupId: listTaxDeductGroupDetail[j].deductGroupId, effectiveDate: effectiveDate };
+        const taxDeductDetailObj = { year: listTaxDeductGroupDetail[j].year, taxDeductId: listTaxDeductGroupDetail[j].taxDeductId, no: j+1, deductGroupId: listTaxDeductGroupDetail[j].deductGroupId, effectiveDate: effectiveDate };
         listTaxDeductGroupDetailObj.push(taxDeductDetailObj);
       }
       taxDeductDetailObjC = { listTaxDeductGroupDetailObj };
@@ -460,7 +471,7 @@ const ListTaxDeduct = () => {
        console.log('list delete 1 >>', list);
        for(var v = 0 ; v < list.length ; v++){
          let object = list[v];
-         object.no = v;
+         object.no = v+1;
          list[v] = object;
        }
        console.log('list delete 2 >>', list);
@@ -568,7 +579,7 @@ const ListTaxDeduct = () => {
 
   const headCells = [
     {
-      id: 'taxDeductId',
+      id: 'no',
       numeric: false,
       align: "center",
       disablePadding: false,
@@ -633,7 +644,7 @@ const ListTaxDeduct = () => {
 
   const [selected, setSelected] = React.useState([]);
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('taxDeductId');
+  const [orderBy, setOrderBy] = React.useState('no');
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {

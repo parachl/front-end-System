@@ -4,7 +4,7 @@ import axios from "axios";
 import api from "../../src/api/GetApi";
 
 const baseURL = "http://localhost:8080/tax/";
-// const baseURL = "https://dev-smws.thailife.com:8443/wsTaxSpring/";
+//  const baseURL = "https://dev-smws.thailife.com:8443/wsTaxSpring/";
 export const AuthenService = {
     checkPermission,
     login,

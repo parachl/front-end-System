@@ -58,6 +58,7 @@ const ListIncomeCatalog = () => {
   const [roleRightV, setRoleRightV] = useState(false);
   let rowsTaxIncome = [{}];
   let listCheckBox = [{}];
+  const [maxId, setMaxid] = useState('');
   const [listTaxIncome, setListTaxIncome] = useState([]);
   let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'},{show:'All',value:'all'}];
 
@@ -88,6 +89,7 @@ const ListIncomeCatalog = () => {
           listCheckBox[i] = {isChecked:false,id: data.listTaxIncomeObj[i].incomeCatalogId};
           // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
         }
+        setMaxid(parseInt(data.maxId));
         setListTaxIncome(rowsTaxIncome);
         setCheckedList(listCheckBox);
       }
@@ -150,6 +152,10 @@ const deleteTaxIncomeCode = async () => {
           title: "Cannot delete this item because it is used.",
         });
       }else{
+        Swal.fire({
+          icon: 'success',
+          title: 'ลบรายการสำเร็จ',
+        });
         fetcData();
       }
     }
@@ -383,7 +389,7 @@ function EnhancedTableHead(props) {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 const addIncomeCatalog = () => {
-  history.push("/addIncomeCatalog");
+  history.push("/addIncomeCatalog", {maxId:maxId });
 }
 
 const [page, setPage] = React.useState(0);

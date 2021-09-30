@@ -116,7 +116,7 @@ const Login = () => {
                     <div className="text-center">
                         <Button type="button" style={styleButtonLogin} onClick={() => verifyLogin(username, password)}>Submit</Button>
                     </div>
-                    <p>Version : 1.0.1</p>
+                    <p>Version : 1.0.2</p>
                 </form>
             </Wrapper>
         </Container>

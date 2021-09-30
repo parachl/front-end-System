@@ -202,7 +202,7 @@ const EditTaxOpcode = () => {
                           <FormControl className={classes.formControl}>
                             <Input className="form-group" type="text" value={opcode} onChange={(e) => {
                               setOpcode(e.target.value);
-                            }} placeholder="with a placeholder" invalid={opcode === "" && submit} />
+                            }} placeholder="with a placeholder" invalid={opcode === "" && submit} disabled />
                             <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

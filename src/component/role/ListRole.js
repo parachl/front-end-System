@@ -137,6 +137,10 @@ const deleteUserRole = async () => {
           title: "Cannot delete this item because it is used.",
         });
       }else{
+        Swal.fire({
+          icon: 'success',
+          title: 'ลบรายการสำเร็จ',
+        });
         fetcData();
       }
     }

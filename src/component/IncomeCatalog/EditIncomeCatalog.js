@@ -185,7 +185,7 @@ const EditIncomeCatalog = () => {
                           <FormControl className={classes.formControl}>
                             <Input className="form-group" type="text" value={incomeCatalogId} onChange={(e) => {
                               setIncomeCatalogId(e.target.value);
-                            }} placeholder="with a placeholder" invalid={incomeCatalogId === "" && submit} />
+                            }} placeholder="with a placeholder" invalid={incomeCatalogId === "" && submit} disabled />
                             <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

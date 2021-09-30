@@ -60,6 +60,7 @@ const ListTaxRate = () => {
   const [roleRightV, setRoleRightV] = useState(false);
   let rowsTaxRate = [{}];
   let listCheckBox = [{}];
+  const [maxId, setMaxid] = useState('');
   const [listTaxRate, setListTaxRate] = useState([]);
   let listStatus = [{show:'Active',value:'active'},{show:'In Active',value:'inactive'},{show:'All',value:'all'}];
 
@@ -91,6 +92,7 @@ const ListTaxRate = () => {
         }
         setListTaxRate(rowsTaxRate);
         setCheckedList(listCheckBox);
+        setMaxid(parseInt(data.maxId));
       }
     } else {
       Swal.fire({
@@ -151,6 +153,10 @@ const deleteTaxRate = async () => {
           title: "Cannot delete this item because it is used.",
         });
       }else{
+        Swal.fire({
+          icon: 'success',
+          title: 'ลบรายการสำเร็จ',
+        });
         fetcData();
       }
     }
@@ -370,7 +376,7 @@ function EnhancedTableHead(props) {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 const addTaxRate= () => {
-  history.push("/addTaxRate");
+  history.push("/addTaxRate", {maxId:maxId });
 }
 
 const [page, setPage] = React.useState(0);

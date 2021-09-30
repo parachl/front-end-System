@@ -62,6 +62,7 @@ const ListTaxDeduct = () => {
   const [roleRightD, setRoleRightD] = useState(false);
   const [roleRightV, setRoleRightV] = useState(false);
   const [open, setOpen] = React.useState(true);
+  const [maxId, setMaxid] = useState('');
   let rowsTaxDeduct = [{}];
   let listCheckBox = [{}];
   const [listTaxDeduct, setListTaxDeduct] = useState([]);
@@ -95,6 +96,7 @@ const ListTaxDeduct = () => {
         }
         setListTaxDeduct(rowsTaxDeduct);
         setCheckedList(listCheckBox);
+        setMaxid(parseInt(data.maxId));
       }
     } else {
       Swal.fire({
@@ -154,6 +156,10 @@ const ListTaxDeduct = () => {
             title: "Cannot delete this item because it is used.",
           });
         } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'ลบรายการสำเร็จ',
+          });
           fetcData();
         }
       }
@@ -300,7 +306,7 @@ const ListTaxDeduct = () => {
 
 
   const addTaxDeduct = () => {
-    history.push("/addTaxDeduct");
+    history.push("/addTaxDeduct", {maxId:maxId });
   }
 
   const [page, setPage] = React.useState(0);

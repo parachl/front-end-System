@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../redux/action/Constants.action';
 import { hideSpinner } from '../../redux/action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory, withRouter } from 'react-router-dom';
+import { useHistory, withRouter, useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
 import { FormGroup, Label, Row, Col, Form, Input, Container,FormFeedback } from 'reactstrap';
@@ -39,6 +39,7 @@ import {styleDivButton,styleButton,styleButtonCancel,required} from '../../theme
 // import Row from './Rows';
 import { store } from "react-notifications-component";
 import Swal from "sweetalert2";
+import { fuctionService } from '../../_services/fuction.service';
 
 const AddTaxOpcode = () => {
   const useStyles = makeStyles((theme) => ({
@@ -75,6 +76,7 @@ const AddTaxOpcode = () => {
   const [updateUser, setUpdateUser] = useState('');
   const [listTaxIncome, setListTaxIncome] = useState([]);
   const [submit, setSubmit] = useState(false);
+  const location = useLocation();
 
   let listStatus = [{ show: 'Active', value: 'active' }, { show: 'In Active', value: 'inactive' }];
   let listGroup = [{ show: 'payroll', value: 'payroll' }, { show: 'commission', value: 'commission' }];
@@ -112,6 +114,7 @@ const AddTaxOpcode = () => {
         }
         setListTaxIncome(rowsTaxIncome);
         setIncomeCatalogId(rowsTaxIncome[0].value);
+        
       }
     } else {
       Swal.fire({
@@ -127,6 +130,8 @@ const AddTaxOpcode = () => {
 
   useEffect(() => {
     initPage();
+    let maxId = fuctionService.genarateId(location.state.maxId+1);
+    setOpCode(maxId);
     fetcDataIncome();
   }, []);
 
@@ -182,7 +187,7 @@ const AddTaxOpcode = () => {
                           <FormControl className={classes.formControl}>
                             <Input className="form-group" type="text" value={opcode} onChange={(e) => {
                               setOpCode(e.target.value);
-                            }} placeholder="with a placeholder" invalid={opcode === "" && submit} />
+                            }} placeholder="with a placeholder" invalid={opcode === "" && submit} disabled />
                             <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

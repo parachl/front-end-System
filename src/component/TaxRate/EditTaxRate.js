@@ -171,7 +171,7 @@ const EditTaxRate = () => {
                           <FormControl className={classes.formControl}>
                           <Input className="form-group" type="text" value={taxRateId} onChange={(e) => {
                         setTaxRateId(e.target.value);
-                      }} placeholder="with a placeholder" invalid={taxRateId === "" && submit} />
+                      }} placeholder="with a placeholder" invalid={taxRateId === "" && submit} disabled />
                       <FormFeedback>กรุณาระบุบข้อมูล</FormFeedback>
                           </FormControl>
                         </Col>

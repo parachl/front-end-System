@@ -291,6 +291,10 @@ const ListUserRole = () => {
     
     const { status, data } = await AuthenService.callApi("POST").post("/userRole/deleteUserAllRole",userRoleObjC);
         if (status === 200) {
+          Swal.fire({
+            icon: 'success',
+            title: 'ลบรายการสำเร็จ',
+          });
           console.log('suubmitDeleteAllRole data>', data);
           setListRoleByUser([]);
         }
