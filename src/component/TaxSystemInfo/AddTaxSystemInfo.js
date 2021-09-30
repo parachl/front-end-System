@@ -204,20 +204,6 @@ const AddTaxSystemInfo = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Row >
-                  <Col>
-                      <FormGroup row>
-                      <Label className="form-group" sm={2}>รายละเอียด</Label>
-                        <Col sm={7}>
-                          <FormControl className={classes.formControl}>
-                          <Input className="form-group" type="textarea" value={description} onChange={(e) => {
-                        setDescription(e.target.value);
-                      }} placeholder="with a placeholder" style={{ width: 720}} />
-                          </FormControl>
-                        </Col>
-                      </FormGroup>
-                    </Col>
-                  </Row>
                   <Row>
                   <Col>
                       <FormGroup row>
